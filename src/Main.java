@@ -74,7 +74,7 @@ class ClienteSucursal extends Persona {
         this.mayorista = mayorista;
         this.nroSocio = nroSocio;
     }
-
+//hola gente
     public int getNroSocio() {
         return nroSocio;
     }
