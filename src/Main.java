@@ -111,6 +111,6 @@ class SeguridadSucursal extends Persona {
     public String getSector() {
         return sector;
     }
-    
+
 }
 
