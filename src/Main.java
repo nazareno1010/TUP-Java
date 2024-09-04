@@ -77,7 +77,7 @@ class ClienteSucursal extends Persona {
 //hola gente
     // Hola aaron
     //hola naza
-    //hola Jose
+    //hola Jose, soy Jose
     public int getNroSocio() {
         return nroSocio;
     }
