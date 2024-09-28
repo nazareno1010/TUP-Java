@@ -67,6 +67,8 @@ class Tienda {
     public void agregarCliente(ClienteTienda clienteTienda) {
         clienteTiendas.add(clienteTienda);
     }
+
+    //Agreguen algo manga de vagoooooosssss
 }
 class TiendaCRUD {
 }
