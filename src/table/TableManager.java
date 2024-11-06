@@ -1,6 +1,5 @@
 package table;
 import register.OperateTables;
-
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;

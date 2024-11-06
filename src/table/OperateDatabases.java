@@ -20,6 +20,7 @@ public class OperateDatabases {
         int count = 1;
         List<String> databases = new ArrayList<>();
 
+        // Recoger las bases de datos disponibles
         while (resultSet.next()) {
             String dbName = resultSet.getString(1);
             if (!EXCLUDED_DATABASES.contains(dbName)) {
@@ -29,36 +30,48 @@ public class OperateDatabases {
             }
         }
 
+        // Si no hay bases de datos disponibles, informamos y retornamos
         if (databases.isEmpty()) {
             System.out.println("No databases available.");
             return;
         }
 
-        // Solicitar selección de base de datos
+        // Mostrar la opción para salir
+        System.out.println("0. Back");
+
+        // Solicitar al usuario una opción
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Select a database by number (or enter 0 to go back): ");
-        int selectedIndex = scanner.nextInt();
 
-        if (selectedIndex == 0) {
-            System.out.println("Returning to the main menu...");
-            app.Main.interfaceDatabase();
-            return;  // Finaliza la ejecución de showDatabases
+        while (true) {
+            System.out.print("Select a database by number (or enter 0 to go back): ");
+            if (scanner.hasNextInt()) {
+                int selectedIndex = scanner.nextInt(); // Variable definida dentro del ciclo
+                if (selectedIndex == 0) {
+                    System.out.println("Returning to the main menu...");
+                    return; // Salir de la función showDatabases y regresar al menú principal
+                }
+                if (selectedIndex >= 1 && selectedIndex <= databases.size()) {
+                    // Opción válida, salimos del bucle
+                    String selectedDatabase = databases.get(selectedIndex - 1);
+                    System.out.println("You selected: " + selectedDatabase);
+
+                    // Cambiar a la base de datos seleccionada
+                    statement.execute("USE " + selectedDatabase);
+
+                    // Llamar a la función para crear una tabla
+                    interfaceTable(statement, selectedDatabase);
+                    break; // Salir después de la selección válida
+                } else {
+                    System.out.println("Invalid selection. Please select a valid number.");
+                }
+            } else {
+                // Capturamos entradas no válidas
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next(); // Limpiar el buffer del scanner
+            }
         }
-
-        if (selectedIndex < 1 || selectedIndex > databases.size()) {
-            System.out.println("Invalid selection.");
-            return;
-        }
-
-        String selectedDatabase = databases.get(selectedIndex - 1);
-        System.out.println("You selected: " + selectedDatabase);
-
-        // Cambiar a la base de datos seleccionada
-        statement.execute("USE " + selectedDatabase);
-
-        // Llamar a la función para crear una tabla
-        interfaceTable(statement, selectedDatabase);
     }
+
 
     public static void interfaceTable(Statement statement, String selectedDatabase) throws SQLException {
         Scanner scanner = new Scanner(System.in);
@@ -68,7 +81,7 @@ public class OperateDatabases {
             System.out.println("1. Show Tables");
             System.out.println("2. Create Tables");
             System.out.println("3. Delete Tables");
-            System.out.println("0. Exit");
+            System.out.println("0. Back");
             System.out.print("Select an option: ");
 
             option = scanner.nextInt();
@@ -80,12 +93,12 @@ public class OperateDatabases {
                     break;
                 case 2:
                   TableManager.createTable(statement, selectedDatabase);
-//                    break;
+                    break;
 //                case 3:
 //                  TableManager.deleteTable(statement, selectedDatabase);
 //                    break;
                 case 0:
-                    System.out.println("Exiting...");
+                  showDatabases(statement);
                     break;
                 default:
                     System.out.println("Invalid option. Please, try again.");

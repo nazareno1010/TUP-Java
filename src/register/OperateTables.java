@@ -87,6 +87,9 @@ public class OperateTables {
 //                case 4:
 //                  RegisterManager.DeleteRegister(statement, selectedTable);
 //                    break;
+//                case 5:
+//                  RegisterManager.TransportCsv(statement, selectedTable);
+//                    break;
                 case 1:
                     System.out.println("Exiting...");
                     break;
