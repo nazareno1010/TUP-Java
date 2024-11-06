@@ -1,3 +1,5 @@
+package app;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -15,6 +17,9 @@ public class DatabaseManager {
         statement.executeUpdate("CREATE DATABASE " + dbName);
         System.out.println("Database '" + dbName + "' created successfully.");
     }
+
+    // AQUI HAY QUE CORREGIR LA FUNCION DELETE DATABASE, SIEMPRE PIDE ELIMINAR UNA BASE DE DATOS,
+    // DEBERIAS PODER VOLVER A INTERFAZ PRINCIPAL
 
     public static void deleteDatabase(Statement statement, Scanner scanner) throws SQLException {
         String sql = "SHOW DATABASES";

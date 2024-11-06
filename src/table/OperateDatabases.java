@@ -1,3 +1,6 @@
+package table;
+import register.OperateTables;
+import app.Main;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -13,7 +16,7 @@ public class OperateDatabases {
         ResultSet resultSet = statement.executeQuery("SHOW DATABASES");
         System.out.println("\n=============================================");
         System.out.println("Databases on the server:");
-        
+
         int count = 1;
         List<String> databases = new ArrayList<>();
 
@@ -33,8 +36,14 @@ public class OperateDatabases {
 
         // Solicitar selección de base de datos
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Select a database by number: ");
+        System.out.print("Select a database by number (or enter 0 to go back): ");
         int selectedIndex = scanner.nextInt();
+
+        if (selectedIndex == 0) {
+            System.out.println("Returning to the main menu...");
+            app.Main.interfaceDatabase();
+            return;  // Finaliza la ejecución de showDatabases
+        }
 
         if (selectedIndex < 1 || selectedIndex > databases.size()) {
             System.out.println("Invalid selection.");
@@ -48,29 +57,41 @@ public class OperateDatabases {
         statement.execute("USE " + selectedDatabase);
 
         // Llamar a la función para crear una tabla
-        createTable(statement, selectedDatabase);
+        interfaceTable(statement, selectedDatabase);
     }
 
-    public static void createTable(Statement statement, String databaseName) throws SQLException {
+    public static void interfaceTable(Statement statement, String selectedDatabase) throws SQLException {
         Scanner scanner = new Scanner(System.in);
+        int option;
+        do {
+            System.out.println("\n===== DBSM - Database Management System =====");
+            System.out.println("1. Show Tables");
+            System.out.println("2. Create Tables");
+            System.out.println("3. Delete Tables");
+            System.out.println("0. Exit");
+            System.out.print("Select an option: ");
 
-        // Solicitar nombre de la tabla
-        System.out.print("Enter the name of the table to create: ");
-        String tableName = scanner.nextLine();
+            option = scanner.nextInt();
+            scanner.nextLine();
 
-        // Solicitar definición de columnas
-        System.out.print("Enter the column definitions (e.g., id INT, name VARCHAR(50)): ");
-        String columnDefinitions = scanner.nextLine();
+            switch (option) {
+                case 1:
+                  OperateTables.showTables(statement, selectedDatabase);
+                    break;
+                case 2:
+                  TableManager.createTable(statement, selectedDatabase);
+//                    break;
+//                case 3:
+//                  TableManager.deleteTable(statement, selectedDatabase);
+//                    break;
+                case 0:
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid option. Please, try again.");
+                    break;
+            }
 
-        // Construir la sentencia SQL para crear la tabla
-        String sql = "CREATE TABLE " + tableName + " (" + columnDefinitions + ")";
-
-        // Ejecutar la creación de la tabla
-        try {
-            statement.executeUpdate(sql);
-            System.out.println("Table '" + tableName + "' created successfully in database '" + databaseName + "'.");
-        } catch (SQLException e) {
-            System.out.println("Error creating table: " + e.getMessage());
-        }
+        } while (option != 0);
     }
 }

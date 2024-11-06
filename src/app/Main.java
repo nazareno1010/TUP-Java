@@ -1,3 +1,6 @@
+package app;
+
+import table.OperateDatabases;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
@@ -18,8 +21,9 @@ public class Main {
         EXCLUDED_DATABASES.add("world");
     }
 
+    public static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
         String password;
 
         do {
@@ -27,6 +31,13 @@ public class Main {
             System.out.print("Enter the MySQL password: ");
             password = scanner.nextLine();
         } while (!ConnectionManager.initialize(URL, USER, password));
+
+        interfaceDatabase();
+        scanner.close();
+        ConnectionManager.closeConnection();
+    }
+
+    public static void interfaceDatabase(){
 
         try (Statement statement = ConnectionManager.getConnection().createStatement()) {
             int option;
@@ -67,7 +78,6 @@ public class Main {
             System.out.println("Error initializing database connection: " + e.getMessage());
         }
 
-        scanner.close();
-        ConnectionManager.closeConnection();
     }
+
 }
