@@ -58,7 +58,7 @@ public class OperateDatabases {
                 if (selectedIndex >= 1 && selectedIndex <= databases.size()) {
                     // Opción válida, salimos del bucle
                     String selectedDatabase = databases.get(selectedIndex - 1);
-                    System.out.println("You selected: " + selectedDatabase);
+                    System.out.println("\nYou selected: " + selectedDatabase);
 
                     // Cambiar a la base de datos seleccionada
                     statement.execute("USE " + selectedDatabase);

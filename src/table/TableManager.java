@@ -1,5 +1,4 @@
 package table;
-import register.OperateTables;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -53,7 +52,7 @@ public class TableManager {
         }
 
         String selectedTable = tables.get(selectedIndex - 1);
-        System.out.println("You selected: " + selectedTable);
+        System.out.println("\nYou selected: " + selectedTable);
 
         // Mostrar el contenido de la tabla seleccionada
         System.out.println("\n=============================================");
@@ -62,18 +61,16 @@ public class TableManager {
         ResultSetMetaData metaData = tableContent.getMetaData();
         int columnCount = metaData.getColumnCount();
 
-        // Mostrar nombres de columnas
-        for (int i = 1; i <= columnCount; i++) {
-            System.out.print(metaData.getColumnName(i) + "\t");
-        }
-        System.out.println();
-
-        // Mostrar filas de la tabla
-        while (tableContent.next()) {
-            for (int i = 1; i <= columnCount; i++) {
-                System.out.print(tableContent.getString(i) + "\t");
-            }
-            System.out.println();
+        // Mostrar nombres y tipo de dato de columnas
+        ResultSet columnsResultSet = statement.executeQuery("SHOW COLUMNS FROM " + selectedTable);
+        List<String> columns = new ArrayList<>();
+        int columnCont = 1;
+        while (columnsResultSet.next()) {
+            String columnName = columnsResultSet.getString("Field");
+            String columnType = columnsResultSet.getString("Type");
+            System.out.println(columnCont + ". " + columnName + " (" + columnType + ")");
+            columns.add(columnName);
+            columnCont++;
         }
 
         boolean editfield = true;
@@ -117,30 +114,43 @@ public class TableManager {
                     break;
 
                 case 2:
-                    // Eliminar una columna
-                    // Mostrar columnas existentes en la tabla
+                    // Mostrar columnas existentes en la tabla con sus tipos de datos
                     System.out.println("\n=============================================");
                     System.out.println("Columns in table " + selectedTable + ":");
-                    ResultSet columnsResultSet = statement.executeQuery("SHOW COLUMNS FROM " + selectedTable);
-                    List<String> columns = new ArrayList<>();
-                    int columnCont = 1;
-                    while (columnsResultSet.next()) {
-                        String columnName = columnsResultSet.getString(1);
-                        System.out.println(columnCont + ". " + columnName);
-                        columns.add(columnName);
-                        columnCont++;
+                    ResultSet columnsResSet = statement.executeQuery("SHOW COLUMNS FROM " + selectedTable);
+                    List<String> col = new ArrayList<>();
+                    int colCont = 1;
+                    while (columnsResSet.next()) {
+                        String columnName = columnsResSet.getString("Field");
+                        String columnType = columnsResSet.getString("Type");
+                        System.out.println(colCont + ". " + columnName + " (" + columnType + ")");
+                        col.add(columnName);
+                        colCont++;
                     }
 
                     // Eliminar una columna
                     System.out.print("Enter the name of the column to delete: ");
                     String columnNameToDelete = scanner.nextLine().trim();
-                    if (!columns.contains(columnNameToDelete)) {
+                    if (!col.contains(columnNameToDelete)) {
                         System.out.println("Invalid column name.");
                         break;
                     }
-                    String deleteColumnQuery = "ALTER TABLE " + selectedTable + " DROP COLUMN " + columnNameToDelete;
-                    statement.executeUpdate(deleteColumnQuery);
-                    System.out.println("Column '" + columnNameToDelete + "' deleted from table '" + selectedTable + "'.");
+
+                    // Confirmar la eliminación de la columna
+                    System.out.print("Are you sure you want to delete the column '" + columnNameToDelete + "'? (y/n): ");
+                    String confirmation = scanner.nextLine().trim().toLowerCase();
+                    if (!confirmation.equals("y")) {
+                        System.out.println("Column deletion cancelled.");
+                        break;
+                    }
+
+                    try {
+                        String deleteColumnQuery = "ALTER TABLE " + selectedTable + " DROP COLUMN " + columnNameToDelete;
+                        statement.executeUpdate(deleteColumnQuery);
+                        System.out.println("Column '" + columnNameToDelete + "' deleted from table '" + selectedTable + "'.");
+                    } catch (SQLException e) {
+                        System.out.println("Error deleting column: " + e.getMessage());
+                    }
                     break;
 
                 case 3:
