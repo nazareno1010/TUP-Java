@@ -94,9 +94,8 @@ public class OperateDatabases {
                 case 2:
                   TableManager.createTable(statement, selectedDatabase);
                     break;
-//                case 3:
-//                  TableManager.deleteTable(statement, selectedDatabase);
-//                    break;
+                case 3:
+                    TableManager.deleteTable(statement, selectedDatabase, scanner);
                 case 0:
                   showDatabases(statement);
                     break;

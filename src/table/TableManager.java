@@ -1,10 +1,62 @@
 package table;
 import register.OperateTables;
+
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class TableManager {
+
+    public static void deleteTable(Statement statement, String selectedDatabase, Scanner scanner) throws SQLException {
+        // Cambiar a la base de datos seleccionada
+        statement.execute("USE " + selectedDatabase);
+
+        // Mostrar las tablas para que el usuario elija cuál borrar
+        ResultSet resultSet = statement.executeQuery("SHOW TABLES");
+        List<String> tables = new ArrayList<>();
+        int count = 1;
+
+        System.out.println("Tables in database '" + selectedDatabase + "':");
+        while (resultSet.next()) {
+            String tableName = resultSet.getString(1);
+            tables.add(tableName);
+            System.out.println(count + ". " + tableName);
+            count++;
+        }
+
+        if (tables.isEmpty()) {
+            System.out.println("No tables available for deletion.");
+            return;
+        }
+
+        // Pedir al usuario que seleccione una tabla para borrar
+        System.out.print("Enter the number of the table you want to delete: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume the newline character
+
+        if (choice < 1 || choice > tables.size()) {
+            System.out.println("Invalid selection.");
+            return;
+        }
+
+        String selectedTable = tables.get(choice - 1);
+
+        // Confirmar la eliminación de la tabla
+        System.out.print("Are you sure you want to delete the table '" + selectedTable + "'? (y/n): ");
+        String confirmation = scanner.nextLine();
+
+        if (confirmation.equalsIgnoreCase("y")) {
+            // Ejecutar el comando SQL para eliminar la tabla
+            statement.executeUpdate("DROP TABLE " + selectedTable);
+            System.out.println("Table '" + selectedTable + "' deleted successfully.");
+        } else {
+            System.out.println("Operation canceled. The table was not deleted.");
+        }
+    }
+
 
     public static void createTable(Statement statement, String selectedDatabase) throws SQLException {
         Scanner scanner = new Scanner(System.in);
