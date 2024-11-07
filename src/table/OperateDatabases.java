@@ -1,4 +1,5 @@
 package table;
+
 import register.OperateTables;
 import app.Main;
 import java.sql.ResultSet;
@@ -10,9 +11,11 @@ import java.util.List;
 import java.util.Scanner;
 
 public class OperateDatabases {
-    private static final Set<String> EXCLUDED_DATABASES = Main.EXCLUDED_DATABASES;
+    // Ya no necesitamos la constante EXCLUDED_DATABASES aquí
+    // private static final Set<String> EXCLUDED_DATABASES = Main.EXCLUDED_DATABASES;
 
-    public static void showDatabases(Statement statement) throws SQLException {
+    // Ahora el método showDatabases acepta dos parámetros
+    public static void showDatabases(Statement statement, Set<String> excludedDatabases) throws SQLException {
         ResultSet resultSet = statement.executeQuery("SHOW DATABASES");
         System.out.println("\n=============================================");
         System.out.println("Databases on the server:");
@@ -23,7 +26,7 @@ public class OperateDatabases {
         // Recoger las bases de datos disponibles
         while (resultSet.next()) {
             String dbName = resultSet.getString(1);
-            if (!EXCLUDED_DATABASES.contains(dbName)) {
+            if (!excludedDatabases.contains(dbName)) {
                 System.out.println(count + ". " + dbName);
                 databases.add(dbName);
                 count++;
@@ -58,7 +61,7 @@ public class OperateDatabases {
                     // Cambiar a la base de datos seleccionada
                     statement.execute("USE " + selectedDatabase);
 
-                    // Llamar a la función para crear una tabla
+                    // Llamar a la función para gestionar las tablas
                     interfaceTable(statement, selectedDatabase);
                     break; // Salir después de la selección válida
                 } else {
@@ -72,7 +75,7 @@ public class OperateDatabases {
         }
     }
 
-
+    // Método para gestionar las operaciones sobre las tablas de la base de datos seleccionada
     public static void interfaceTable(Statement statement, String selectedDatabase) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         int option;
@@ -85,20 +88,26 @@ public class OperateDatabases {
             System.out.print("Select an option: ");
 
             option = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // Limpiar el buffer del scanner
 
             switch (option) {
                 case 1:
-                  OperateTables.showTables(statement, selectedDatabase);
+                    // Mostrar las tablas en la base de datos seleccionada
+                    OperateTables.showTables(statement, selectedDatabase);
                     break;
                 case 2:
-                  TableManager.createTable(statement, selectedDatabase);
+                    // Crear una nueva tabla en la base de datos seleccionada
+                    TableManager.createTable(statement, selectedDatabase);
                     break;
                 case 3:
+                    // Eliminar una tabla de la base de datos seleccionada
                     TableManager.deleteTable(statement, selectedDatabase, scanner);
+                    break;  // Añadido el `break` para que no pase al siguiente caso
                 case 0:
-                  showDatabases(statement);
-                    break;
+                    // Regresar al menú de bases de datos
+                    System.out.println("Returning to database selection...");
+                    showDatabases(statement, Main.EXCLUDED_DATABASES); // Ahora pasamos el conjunto de bases excluidas
+                    return; // Salir del ciclo y regresar a la pantalla anterior
                 default:
                     System.out.println("Invalid option. Please, try again.");
                     break;
@@ -107,3 +116,4 @@ public class OperateDatabases {
         } while (option != 0);
     }
 }
+

@@ -14,11 +14,13 @@ public class ConnectionManager {
                 System.out.println("Connection established successfully.");
                 return true;
             } catch (SQLException e) {
-                System.out.println("Invalid password. Please try again.");
+                System.out.println("Connection failed: " + e.getMessage());
                 return false;
             }
+        } else {
+            System.out.println("Using existing connection.");
+            return true;
         }
-        return true;
     }
 
     public static Connection getConnection() throws SQLException {
@@ -35,7 +37,11 @@ public class ConnectionManager {
                 System.out.println("Connection closed.");
             } catch (SQLException e) {
                 System.out.println("Error closing connection: " + e.getMessage());
+            } finally {
+                connection = null;
             }
         }
     }
 }
+
+

@@ -19,7 +19,6 @@ public class DatabaseManager {
 
     public static void deleteDatabase(Statement statement, Scanner scanner) throws SQLException {
         while (true) {
-            // Mostrar bases de datos
             String sql = "SHOW DATABASES";
             ResultSet resultSet = statement.executeQuery(sql);
             List<String> databases = new ArrayList<>();
@@ -45,27 +44,25 @@ public class DatabaseManager {
 
             int choice = -1;
 
-            // Solicitar número de base de datos a eliminar
             System.out.print("Enter the number of the database you want to delete: ");
             try {
                 choice = scanner.nextInt();
                 scanner.nextLine();
 
-                // Validar la opción ingresada
                 if (choice == 0) {
                     System.out.println("Operation canceled. Returning to previous menu.");
                     return;
                 } else if (choice < 1 || choice > databases.size()) {
                     System.out.println("\n=============================================");
                     System.out.println("Invalid selection. Please enter a valid number from the list or '0' to cancel.");
-                    continue;  // Volver a mostrar la lista de bases de datos
+                    continue;
                 }
 
             } catch (InputMismatchException e) {
                 System.out.println("\n=============================================");
                 System.out.println("Invalid input. Please enter a valid number.");
                 scanner.nextLine();  // Limpiar el buffer para evitar un bucle infinito
-                continue;  // Volver a mostrar la lista de bases de datos
+                continue;
             }
 
             String selectedDatabase = databases.get(choice - 1);
@@ -78,7 +75,6 @@ public class DatabaseManager {
                 break; // Salir del bucle después de eliminar la base de datos
             } else {
                 System.out.println("Operation canceled. The database was not deleted.");
-                // Volverá a mostrar la lista de bases de datos porque el bucle `while(true)` continúa
             }
         }
     }

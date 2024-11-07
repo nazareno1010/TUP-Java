@@ -8,8 +8,6 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class Main {
-    private static final String URL = "jdbc:mysql://localhost:3306/";
-    private static final String USER = "root";
     public static final Set<String> EXCLUDED_DATABASES = new HashSet<>();
 
     static {
@@ -24,21 +22,28 @@ public class Main {
     public static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        String password;
+        ConfigManager.loadConfig();
 
-        do {
-            System.out.println("\n===== DBSM - Database Management System =====");
-            System.out.print("Enter the MySQL password: ");
-            password = scanner.nextLine();
-        } while (!ConnectionManager.initialize(URL, USER, password));
+        // Si la configuración no existe, pedirla al usuario
+        if (ConfigManager.getURL() == null || ConfigManager.getUser() == null || ConfigManager.getPassword() == null) {
+            System.out.println("No configuration found or invalid. Please enter new credentials.");
+            ConfigManager.getUserInput(scanner);
+            ConfigManager.saveConfig();
+        }
+
+        // Establecer la conexión con la base de datos
+        while (!ConfigManager.validateConnection()) {
+            System.out.println("Invalid credentials, please try again.");
+            ConfigManager.getUserInput(scanner);
+            ConfigManager.saveConfig();
+        }
 
         interfaceDatabase();
         scanner.close();
         ConnectionManager.closeConnection();
     }
 
-    public static void interfaceDatabase(){
-
+    public static void interfaceDatabase() {
         try (Statement statement = ConnectionManager.getConnection().createStatement()) {
             int option;
             do {
@@ -55,7 +60,7 @@ public class Main {
                 try {
                     switch (option) {
                         case 1:
-                            OperateDatabases.showDatabases(statement);
+                            OperateDatabases.showDatabases(statement, EXCLUDED_DATABASES);
                             break;
                         case 2:
                             DatabaseManager.createDatabase(statement, scanner);
@@ -77,7 +82,8 @@ public class Main {
         } catch (SQLException e) {
             System.out.println("Error initializing database connection: " + e.getMessage());
         }
-
     }
-
 }
+
+
+
