@@ -74,37 +74,55 @@ public class TableManager {
         // Bucle para agregar más campos
         boolean addMoreFields = true;
         while (addMoreFields) {
-            System.out.print("Do you want to add a new field? (yes/no): ");
+            System.out.print("Do you want to add a new field? (y/n): ");
             String response = scanner.nextLine().trim().toLowerCase();
 
-            if (response.equals("no")) {
+            if (response.equals("n")) {
                 addMoreFields = false; // Finaliza la adición de campos
-                OperateTables.showTables(statement, selectedDatabase);
-            } else if (response.equals("yes")) {
+            } else if (response.equals("y")) {
                 // Solicitar el nombre del nuevo campo
                 System.out.print("Enter the field name: ");
                 String fieldName = scanner.nextLine().trim();
 
-                // Solicitar el tipo de datos del campo
-                System.out.print("Select the data type (INT, VARCHAR(255), DOUBLE, etc.): ");
-                String dataType = scanner.nextLine().trim();
+                // Solicitar el tipo de datos del campo usando un switch
+                System.out.println("\n=====Select the data type =====");
+                System.out.println("1. INT");
+                System.out.println("2. VARCHAR(255)");
+                System.out.println("3. DOUBLE");
+                System.out.println("4. OTHER");
+
+                int dataTypeOption = Integer.parseInt(scanner.nextLine().trim());
+                String dataType = switch (dataTypeOption) {
+                    case 1 -> "INT";
+                    case 2 -> "VARCHAR(255)";
+                    case 3 -> "DOUBLE";
+                    default -> {
+                        System.out.print("Enter the custom data type: ");
+                        yield scanner.nextLine().trim();
+                    }
+                };
 
                 // Agregar el nuevo campo a la consulta
                 createTableQuery.append(", ").append(fieldName).append(" ").append(dataType);
             } else {
-                System.out.println("Invalid response. Please type 'yes' or 'no'.");
+                System.out.println("Invalid response. Please type 'y' or 'n'.");
             }
         }
 
         // Completar la consulta de creación de tabla
         createTableQuery.append(");");
 
+        // Imprimir la consulta para fines de depuración
+        System.out.println("SQL Query: " + createTableQuery.toString());
+
         // Ejecutar la consulta para crear la tabla
         statement.executeUpdate(createTableQuery.toString());
         System.out.println("Table " + tableName + " created successfully in database " + selectedDatabase + ".");
 
-        scanner.close(); // Cerrar Scanner para liberar recursos
+        // Mostrar las tablas existentes después de crear la nueva tabla
+        OperateTables.showTables(statement, selectedDatabase);
 
+        scanner.close(); // Cerrar Scanner para liberar recursos
     }
 
 }
