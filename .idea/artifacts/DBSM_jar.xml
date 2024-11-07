@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="DBSM:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/DBSM_jar</output-path>
+    <root id="archive" name="DBSM.jar">
+      <element id="module-output" name="DBSM" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/mysql-connector-j-9.0.0/mysql-connector-j-9.0.0/mysql-connector-j-9.0.0.jar" path-in-jar="/" />
+      <element id="library" level="project" name="mysql-connector-j-9.0.01" />
+    </root>
+  </artifact>
+</component>
