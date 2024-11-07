@@ -39,7 +39,7 @@ public class Main {
         }
 
         interfaceDatabase();
-        scanner.close();
+//        scanner.close();
         ConnectionManager.closeConnection();
     }
 

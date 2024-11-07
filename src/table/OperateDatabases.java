@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static table.TableManager.showTables;
+
 public class OperateDatabases {
     // Ya no necesitamos la constante EXCLUDED_DATABASES aquí
     // private static final Set<String> EXCLUDED_DATABASES = Main.EXCLUDED_DATABASES;
@@ -93,7 +95,7 @@ public class OperateDatabases {
             switch (option) {
                 case 1:
                     // Mostrar las tablas en la base de datos seleccionada
-                    OperateTables.showTables(statement, selectedDatabase);
+                    showTables(statement, selectedDatabase);
                     break;
                 case 2:
                     // Crear una nueva tabla en la base de datos seleccionada

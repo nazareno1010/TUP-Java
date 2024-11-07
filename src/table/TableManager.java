@@ -10,6 +10,53 @@ import java.util.Scanner;
 
 public class TableManager {
 
+    public static void showTables(Statement statement, String database) throws SQLException {
+        // Cambiar a la base de datos seleccionada
+        statement.execute("USE " + database);
+
+        // Ejecutar el comando para mostrar las tablas
+        ResultSet resultSet = statement.executeQuery("SHOW TABLES");
+        System.out.println("\n=============================================");
+        System.out.println("Tables in the database: " + database);
+
+        int count = 1;
+        List<String> tables = new ArrayList<>();
+
+        // Almacenar y mostrar las tablas encontradas
+        while (resultSet.next()) {
+            String tableName = resultSet.getString(1);
+            System.out.println(count + ". " + tableName);
+            tables.add(tableName);
+            count++;
+        }
+
+        if (tables.isEmpty()) {
+            System.out.println("No tables available in this database.");
+            return;
+        }
+
+        // Solicitar selección de una tabla
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Select a table by number (or enter 0 to go back): ");
+        int selectedIndex = scanner.nextInt();
+
+        if (selectedIndex == 0) {
+            System.out.println("Returning to the previous menu...");
+            return;  // Finaliza la ejecución de showTables
+        }
+
+        if (selectedIndex < 1 || selectedIndex > tables.size()) {
+            System.out.println("Invalid selection.");
+            return;
+        }
+
+        String selectedTable = tables.get(selectedIndex - 1);
+        System.out.println("You selected: " + selectedTable);
+
+
+    }
+
+
     public static void deleteTable(Statement statement, String selectedDatabase, Scanner scanner) throws SQLException {
         // Cambiar a la base de datos seleccionada
         statement.execute("USE " + selectedDatabase);
@@ -71,25 +118,25 @@ public class TableManager {
         // Iniciar la consulta para crear la tabla con el campo 'id' como clave primaria auto incremental
         StringBuilder createTableQuery = new StringBuilder("CREATE TABLE " + tableName + " (id INT AUTO_INCREMENT PRIMARY KEY");
 
-        // Bucle para agregar más campos
+        // Bucle para agregar más campos (columnas)
         boolean addMoreFields = true;
         while (addMoreFields) {
-            System.out.print("Do you want to add a new field? (y/n): ");
+            System.out.print("Do you want to add a new column (field)? (y/n): ");
             String response = scanner.nextLine().trim().toLowerCase();
 
             if (response.equals("n")) {
-                addMoreFields = false; // Finaliza la adición de campos
+                addMoreFields = false; // Finaliza la adición de columnas
             } else if (response.equals("y")) {
-                // Solicitar el nombre del nuevo campo
-                System.out.print("Enter the field name: ");
+                // Solicitar el nombre de la nueva columna
+                System.out.print("Enter the column (field) name: ");
                 String fieldName = scanner.nextLine().trim();
 
-                // Solicitar el tipo de datos del campo usando un switch
-                System.out.println("\n=====Select the data type =====");
-                System.out.println("1. INT");
-                System.out.println("2. VARCHAR(255)");
-                System.out.println("3. DOUBLE");
-                System.out.println("4. OTHER");
+                // Solicitar el tipo de datos de la columna usando un switch
+                System.out.println("\n=====Select the data type for the column '" + fieldName + "'=====");
+                System.out.println("1. INT (Integer)");
+                System.out.println("2. VARCHAR(255) (Text up to 255 characters)");
+                System.out.println("3. DOUBLE (Decimal number)");
+                System.out.println("4. OTHER (Custom data type)");
 
                 int dataTypeOption = Integer.parseInt(scanner.nextLine().trim());
                 String dataType = switch (dataTypeOption) {
@@ -97,17 +144,19 @@ public class TableManager {
                     case 2 -> "VARCHAR(255)";
                     case 3 -> "DOUBLE";
                     default -> {
-                        System.out.print("Enter the custom data type: ");
+                        System.out.print("Enter the custom data type for column '" + fieldName + "': ");
                         yield scanner.nextLine().trim();
                     }
                 };
 
-                // Agregar el nuevo campo a la consulta
+                // Agregar la nueva columna a la consulta
                 createTableQuery.append(", ").append(fieldName).append(" ").append(dataType);
+                System.out.println("Column '" + fieldName + "' with data type '" + dataType + "' added.");
             } else {
-                System.out.println("Invalid response. Please type 'y' or 'n'.");
+                System.out.println("Invalid response. Please type 'y' (yes) or 'n' (no).");
             }
         }
+
 
         // Completar la consulta de creación de tabla
         createTableQuery.append(");");
@@ -120,9 +169,9 @@ public class TableManager {
         System.out.println("Table " + tableName + " created successfully in database " + selectedDatabase + ".");
 
         // Mostrar las tablas existentes después de crear la nueva tabla
-        OperateTables.showTables(statement, selectedDatabase);
+        showTables(statement, selectedDatabase);
 
-        scanner.close(); // Cerrar Scanner para liberar recursos
+//        scanner.close(); // Cerrar Scanner para liberar recursos
     }
 
 }
