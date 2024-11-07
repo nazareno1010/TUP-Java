@@ -18,7 +18,7 @@ public class DatabaseManager {
         System.out.println("Database '" + dbName + "' created successfully.");
     }
 
-    // Pide al usuario una base de datos para eliminar o volver al main en caso de que no lo haga
+    // Pide al usuario una base de datos para eliminar o volver al menu en caso de que no lo haga
 
     public static void deleteDatabase(Statement statement, Scanner scanner) throws SQLException {
         String sql = "SHOW DATABASES";
