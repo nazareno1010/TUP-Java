@@ -18,8 +18,7 @@ public class DatabaseManager {
         System.out.println("Database '" + dbName + "' created successfully.");
     }
 
-    // AQUI HAY QUE CORREGIR LA FUNCION DELETE DATABASE, SIEMPRE PIDE ELIMINAR UNA BASE DE DATOS,
-    // DEBERIAS PODER VOLVER A INTERFAZ PRINCIPAL
+    // Pide al usuario una base de datos para eliminar o volver al main en caso de que no lo haga
 
     public static void deleteDatabase(Statement statement, Scanner scanner) throws SQLException {
         String sql = "SHOW DATABASES";
@@ -43,13 +42,23 @@ public class DatabaseManager {
             return;
         }
 
-        System.out.print("Enter the number of the database you want to delete: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
+        System.out.println("0. Cancel and go back");
 
-        if (choice < 1 || choice > databases.size()) {
-            System.out.println("Invalid selection.");
-            return;
+        int choice = -1;
+        while (true) {
+            System.out.print("Enter the number of the database you want to delete: ");
+            choice = scanner.nextInt();
+            scanner.nextLine();
+
+            if (choice == 0) {
+                System.out.println("Operation canceled. Returning to previous menu.");
+                return;
+            } else if (choice < 1 || choice > databases.size()) {
+                System.out.println("\n=============================================");
+                System.out.println("Invalid selection. Please enter a valid number or '0' to cancel.");
+            } else {
+                break;
+            }
         }
 
         String selectedDatabase = databases.get(choice - 1);
@@ -65,3 +74,5 @@ public class DatabaseManager {
         }
     }
 }
+
+
