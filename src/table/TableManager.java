@@ -2,6 +2,7 @@ package table;
 import register.OperateTables;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class TableManager {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Select a table by number (or enter 0 to go back): ");
         int selectedIndex = scanner.nextInt();
+        scanner.nextLine(); // Consumir la nueva línea
 
         if (selectedIndex == 0) {
             System.out.println("Returning to the previous menu...");
@@ -53,7 +55,105 @@ public class TableManager {
         String selectedTable = tables.get(selectedIndex - 1);
         System.out.println("You selected: " + selectedTable);
 
+        // Mostrar el contenido de la tabla seleccionada
+        System.out.println("\n=============================================");
+        System.out.println("Contents of table: " + selectedTable);
+        ResultSet tableContent = statement.executeQuery("SELECT * FROM " + selectedTable);
+        ResultSetMetaData metaData = tableContent.getMetaData();
+        int columnCount = metaData.getColumnCount();
 
+        // Mostrar nombres de columnas
+        for (int i = 1; i <= columnCount; i++) {
+            System.out.print(metaData.getColumnName(i) + "\t");
+        }
+        System.out.println();
+
+        // Mostrar filas de la tabla
+        while (tableContent.next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.print(tableContent.getString(i) + "\t");
+            }
+            System.out.println();
+        }
+
+        boolean editfield = true;
+
+        do {
+            // Proporcionar opciones para agregar o eliminar columnas
+            System.out.println("\n=============================================");
+            System.out.println("Options:");
+            System.out.println("1. Add a new column");
+            System.out.println("2. Delete a column");
+            System.out.println("3. Return to previous menu");
+            System.out.print("Select an option: ");
+            int option = scanner.nextInt();
+            scanner.nextLine(); // Consumir la nueva línea
+
+            switch (option) {
+                case 1:
+                    // Agregar una nueva columna
+                    System.out.print("Enter the name of the new column: ");
+                    String newColumnName = scanner.nextLine().trim();
+                    System.out.println("\n===== Select the data type for the column =====");
+                    System.out.println("1. INT (Integer)");
+                    System.out.println("2. VARCHAR(255) (Text up to 255 characters)");
+                    System.out.println("3. DOUBLE (Decimal number)");
+                    System.out.println("4. OTHER (Custom data type)");
+                    int dataTypeOption = scanner.nextInt();
+                    scanner.nextLine(); // Consumir la nueva línea
+                    String newDataType = switch (dataTypeOption) {
+                        case 1 -> "INT";
+                        case 2 -> "VARCHAR(255)";
+                        case 3 -> "DOUBLE";
+                        default -> {
+                            System.out.print("Enter the custom data type: ");
+                            yield scanner.nextLine().trim();
+                        }
+                    };
+
+                    String addColumnQuery = "ALTER TABLE " + selectedTable + " ADD " + newColumnName + " " + newDataType;
+                    statement.executeUpdate(addColumnQuery);
+                    System.out.println("Column '" + newColumnName + "' with data type '" + newDataType + "' added to table '" + selectedTable + "'.");
+                    break;
+
+                case 2:
+                    // Eliminar una columna
+                    // Mostrar columnas existentes en la tabla
+                    System.out.println("\n=============================================");
+                    System.out.println("Columns in table " + selectedTable + ":");
+                    ResultSet columnsResultSet = statement.executeQuery("SHOW COLUMNS FROM " + selectedTable);
+                    List<String> columns = new ArrayList<>();
+                    int columnCont = 1;
+                    while (columnsResultSet.next()) {
+                        String columnName = columnsResultSet.getString(1);
+                        System.out.println(columnCont + ". " + columnName);
+                        columns.add(columnName);
+                        columnCont++;
+                    }
+
+                    // Eliminar una columna
+                    System.out.print("Enter the name of the column to delete: ");
+                    String columnNameToDelete = scanner.nextLine().trim();
+                    if (!columns.contains(columnNameToDelete)) {
+                        System.out.println("Invalid column name.");
+                        break;
+                    }
+                    String deleteColumnQuery = "ALTER TABLE " + selectedTable + " DROP COLUMN " + columnNameToDelete;
+                    statement.executeUpdate(deleteColumnQuery);
+                    System.out.println("Column '" + columnNameToDelete + "' deleted from table '" + selectedTable + "'.");
+                    break;
+
+                case 3:
+                    System.out.println("Returning to the previous menu...");
+                    editfield = false;
+                    break;
+
+                default:
+                    System.out.println("Invalid option.");
+            }
+        } while (editfield);
+
+//        scanner.close(); // Cerrar Scanner para liberar recursos
     }
 
 

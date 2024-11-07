@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7c45faa-8692-4a08-82d7-ff91d2e59197" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/register/OperateTables.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/register/OperateTables.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/table/OperateDatabases.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/table/OperateDatabases.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/DBSM_jar/DBSM.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/DBSM_jar/DBSM.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/DBSM/table/TableManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DBSM/table/TableManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/table/TableManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/table/TableManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
