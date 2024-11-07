@@ -54,4 +54,5 @@ public class TableManager {
         scanner.close(); // Cerrar Scanner para liberar recursos
 
     }
+
 }
