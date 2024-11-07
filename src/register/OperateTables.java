@@ -67,7 +67,8 @@ public class OperateTables {
             System.out.println("1. Create Register");
             System.out.println("2. Read Register");
             System.out.println("3. Update Register");
-            System.out.println("3. Delete Register");
+            System.out.println("4. Delete Register");
+            System.out.println("5. Convert to .CSV");
             System.out.println("0. Exit");
             System.out.print("Select an option: ");
 
