@@ -19,9 +19,10 @@ public class OperateTables {
             System.out.println("\n===== DBSM - Database Management System =====");
             System.out.println("1. Create Register");
             System.out.println("2. Read Register");
-            System.out.println("3. Update Register");
-            System.out.println("4. Delete Register");
-            System.out.println("5. Convert to .CSV");
+            System.out.println("3. Search Register With ID");
+            System.out.println("4. Update Register");
+            System.out.println("5. Delete Register");
+            System.out.println("6. Convert to .CSV");
             System.out.println("0. Exit");
             System.out.print("Select an option: ");
 
@@ -35,7 +36,8 @@ public class OperateTables {
                 case 2:
                     RegisterManager.readRegister(statement, selectedTable);
                     break;
-                case 0:
+                case 3:
+                    RegisterManager.searchRegister(statement, selectedTable);
                     break;
 //                case 4:
 //                  RegisterManager.DeleteRegister(statement, selectedTable);

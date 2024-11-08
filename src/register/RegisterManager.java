@@ -1,14 +1,92 @@
 package register;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Scanner;
 
 public class RegisterManager {
+
+    //Metodo para reducir la repetecion de codigo en searchRegister y showRegisters
+    public static void printTableHeaders(List<String> columns, Map<String, Integer> columnWidths) {
+        // Imprimir encabezados con la alineación
+        for (String column : columns) {
+            System.out.print(padRight(column, columnWidths.get(column)) + " | ");
+        }
+        System.out.println();
+        System.out.println("-".repeat(columnWidths.values().stream().mapToInt(Integer::intValue).sum() + columns.size() * 3));
+    }
+
+    //Metodo para reducir la repetecion de codigo en searchRegister y showRegisters
+    public static void printTableRows(List<Map<String, String>> rows, List<String> columns, Map<String, Integer> columnWidths) {
+        // Imprimir cada fila con alineación
+        for (Map<String, String> row : rows) {
+            for (String column : columns) {
+                String value = row.get(column);
+                System.out.print(padRight(value != null ? value : "NULL", columnWidths.get(column)) + " | ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static void searchRegister(Statement statement, String selectedTable) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+
+        // Solicitar el ID del registro a buscar
+        System.out.print("Ingrese el ID del registro que desea buscar: ");
+        int id = scanner.nextInt();
+        scanner.nextLine(); // Consumir la nueva línea
+
+        // Crear la consulta SQL para buscar el registro por su ID
+        String query = "SELECT * FROM " + selectedTable + " WHERE id = " + id;
+
+        // Obtener las columnas antes de ejecutar la consulta del registro
+        List<String> columns = new ArrayList<>();
+        Map<String, Integer> columnWidths = new HashMap<>();
+        ResultSet columnsResultSet = statement.executeQuery("SHOW COLUMNS FROM " + selectedTable);
+
+        while (columnsResultSet.next()) {
+            String columnName = columnsResultSet.getString("Field");
+            columns.add(columnName);
+            columnWidths.put(columnName, columnName.length()); // Inicializar ancho mínimo como el del nombre de la columna
+        }
+
+        // Ejecutar la consulta para obtener el registro
+        ResultSet resultSet = statement.executeQuery(query);
+
+        // Verificar si el registro existe
+        if (resultSet.next()) {
+            System.out.println("\nRegistro encontrado:");
+
+            // Obtener los valores del registro
+            Map<String, String> row = new HashMap<>();
+            for (String column : columns) {
+                String value = resultSet.getString(column);
+                row.put(column, value);
+
+                // Actualizar el ancho máximo de cada columna
+                if (value != null && value.length() > columnWidths.get(column)) {
+                    columnWidths.put(column, value.length());
+                }
+            }
+
+            // Imprimir encabezados
+            printTableHeaders(columns, columnWidths);
+
+            // Imprimir el valor del registro encontrado
+            printTableRows(Collections.singletonList(row), columns, columnWidths);
+
+        } else {
+            System.out.println("No se encontró ningún registro con el ID proporcionado.");
+        }
+    }
+
+
+    // Método auxiliar para alinear el texto a la derecha
+    public static String padRight(String text, int length) {
+        return String.format("%-" + length + "s", text);
+    }
 
     public static void readRegister(Statement statement, String selectedTable) throws SQLException {
         System.out.println("\n===== Viewing Records from Table: " + selectedTable + " =====");
@@ -43,29 +121,15 @@ public class RegisterManager {
             rows.add(row);
         }
 
-        // Imprimir encabezados con la alineación
-        for (String column : columns) {
-            System.out.print(padRight(column, columnWidths.get(column)) + " | ");
-        }
-        System.out.println();
-        System.out.println("-".repeat(columnWidths.values().stream().mapToInt(Integer::intValue).sum() + columns.size() * 3));
+        // Imprimir encabezados con la alineación usando el método printTableHeaders
+        printTableHeaders(columns, columnWidths);
 
-        // Imprimir cada fila con alineación
-        for (Map<String, String> row : rows) {
-            for (String column : columns) {
-                String value = row.get(column);
-                System.out.print(padRight(value != null ? value : "NULL", columnWidths.get(column)) + " | ");
-            }
-            System.out.println();
-        }
+        // Imprimir cada fila con alineación usando el método printTableRows
+        printTableRows(rows, columns, columnWidths);
 
         System.out.println("===== End of Records =====");
     }
 
-    // Método auxiliar para alinear texto a la derecha con un ancho específico
-    private static String padRight(String text, int length) {
-        return String.format("%-" + length + "s", text);
-    }
 
     public static void CreateRegister(Statement statement, String selectedTable) throws SQLException {
         Scanner scanner = new Scanner(System.in);
