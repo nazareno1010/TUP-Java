@@ -1,5 +1,7 @@
 package table;
 
+import register.OperateTables;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -76,12 +78,13 @@ public class TableManager {
         boolean editfield = true;
 
         do {
-            // Proporcionar opciones para agregar o eliminar columnas
+            // Proporcionar opciones para agregar, eliminar columnas y/o trabajar con registros
             System.out.println("\n=============================================");
             System.out.println("Options:");
             System.out.println("1. Add a new column");
             System.out.println("2. Delete a column");
-            System.out.println("3. Return to previous menu");
+            System.out.println("3. Work with registers");
+            System.out.println("4. Return to previous menu");
             System.out.print("Select an option: ");
             int option = scanner.nextInt();
             scanner.nextLine(); // Consumir la nueva línea
@@ -154,6 +157,10 @@ public class TableManager {
                     break;
 
                 case 3:
+                    OperateTables.interfaceRegister(statement, selectedTable);
+                    break;
+
+                case 4:
                     System.out.println("Returning to the previous menu...");
                     editfield = false;
                     break;

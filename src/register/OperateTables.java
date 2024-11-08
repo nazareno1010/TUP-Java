@@ -29,12 +29,11 @@ public class OperateTables {
             scanner.nextLine();
 
             switch (option) {
-//                case 1:
-//                    RegisterManager.CreateRegister(statement, selectedTable);
-//                    break;
-//                case 2:
-//                  RegisterManager.ReadRegister(statement, selectedTable);
-//                    break;
+                case 1:
+                    RegisterManager.CreateRegister(statement, selectedTable);
+                    break;
+                case 2:
+                    break;
 //                case 3:
 //                  RegisterManager.UpdateRegister(statement, selectedTable);
 //                    break;
@@ -44,9 +43,9 @@ public class OperateTables {
 //                case 5:
 //                  RegisterManager.TransportCsv(statement, selectedTable);
 //                    break;
-                case 1:
-                    System.out.println("Exiting...");
-                    break;
+//                case 1:
+//                    System.out.println("Exiting...");
+//                    break;
                 default:
                     System.out.println("Invalid option. Please, try again.");
                     break;
