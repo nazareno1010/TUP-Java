@@ -161,6 +161,7 @@ public class ConfigManager {
             }
         }
     }
+
     private static void requestNewCredentials(Scanner scanner, boolean skipUsername) {
         if (!skipUsername) {
             System.out.print("Enter username: ");

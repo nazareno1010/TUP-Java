@@ -6,6 +6,7 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
+import static table.OperateDatabases.exportDatabaseToCSV;
 
 public class Main {
     public static final Set<String> EXCLUDED_DATABASES = new HashSet<>();
@@ -42,6 +43,7 @@ public class Main {
                 System.out.println("1. Show Databases");
                 System.out.println("2. Create Database");
                 System.out.println("3. Delete Database");
+                System.out.println("4. Export Database to .CVS");
                 System.out.println("0. Exit");
                 System.out.print("Select an option: ");
 
@@ -59,6 +61,9 @@ public class Main {
                                 break;
                             case 3:
                                 DatabaseManager.deleteDatabase(statement, scanner);
+                                break;
+                            case 4:
+                                exportDatabaseToCSV();
                                 break;
                             case 0:
                                 System.out.println("Exiting...");

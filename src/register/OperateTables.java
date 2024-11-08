@@ -48,6 +48,8 @@ public class OperateTables {
 //                case 1:
 //                    System.out.println("Exiting...");
 //                    break;
+                case 0:
+                    break;
                 default:
                     System.out.println("Invalid option. Please, try again.");
                     break;
