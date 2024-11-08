@@ -91,7 +91,16 @@ public class TableManager {
 
             switch (option) {
                 case 1:
-                    // Agregar una nueva columna
+                    // Verificar si la columna `id` ya existe en la tabla
+                    ResultSet rs = statement.executeQuery("SHOW COLUMNS FROM " + selectedTable + " LIKE 'id'");
+                    if (!rs.next()) {
+                        // Crear la columna `id` si no existe
+                        String addIdColumnQuery = "ALTER TABLE " + selectedTable + " ADD id INT PRIMARY KEY AUTO_INCREMENT";
+                        statement.executeUpdate(addIdColumnQuery);
+                        System.out.println("Column 'id' added to table '" + selectedTable + "' as PRIMARY KEY with AUTO_INCREMENT.");
+                    }
+
+                    // Agregar una nueva columna personalizada
                     System.out.print("Enter the name of the new column: ");
                     String newColumnName = scanner.nextLine().trim();
                     System.out.println("\n===== Select the data type for the column =====");
