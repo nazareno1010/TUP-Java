@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 public class RegisterManager {
 
+    //Metodo para reducir la repetecion de codigo en searchRegister y showRegisters
     public static void printTableHeaders(List<String> columns, Map<String, Integer> columnWidths) {
         // Imprimir encabezados con la alineación
         for (String column : columns) {
@@ -17,6 +18,7 @@ public class RegisterManager {
         System.out.println("-".repeat(columnWidths.values().stream().mapToInt(Integer::intValue).sum() + columns.size() * 3));
     }
 
+    //Metodo para reducir la repetecion de codigo en searchRegister y showRegisters
     public static void printTableRows(List<Map<String, String>> rows, List<String> columns, Map<String, Integer> columnWidths) {
         // Imprimir cada fila con alineación
         for (Map<String, String> row : rows) {
