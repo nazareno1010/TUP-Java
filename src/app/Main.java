@@ -22,30 +22,21 @@ public class Main {
     public static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        ConfigManager.loadConfig();
+        ConfigManager.loginUser(scanner);
 
-        // Si la configuración no existe, pedirla al usuario
-        if (ConfigManager.getURL() == null || ConfigManager.getUser() == null || ConfigManager.getPassword() == null) {
-            System.out.println("No configuration found or invalid. Please enter new credentials.");
-            ConfigManager.getUserInput(scanner);
-            ConfigManager.saveConfig();
+        if (ConnectionManager.initialize(ConfigManager.getURL(), ConfigManager.getUsername(), ConfigManager.getPassword())) {
+            interfaceDatabase();
+        } else {
+            System.out.println("Unable to establish a database connection.");
         }
 
-        // Establecer la conexión con la base de datos
-        while (!ConfigManager.validateConnection()) {
-            System.out.println("Invalid credentials, please try again.");
-            ConfigManager.getUserInput(scanner);
-            ConfigManager.saveConfig();
-        }
-
-        interfaceDatabase();
-//        scanner.close();
+        scanner.close();
         ConnectionManager.closeConnection();
     }
 
     public static void interfaceDatabase() {
         try (Statement statement = ConnectionManager.getConnection().createStatement()) {
-            int option;
+            int option = -1;
             do {
                 System.out.println("\n===== DBSM - Database Management System =====");
                 System.out.println("1. Show Databases");
@@ -54,29 +45,34 @@ public class Main {
                 System.out.println("0. Exit");
                 System.out.print("Select an option: ");
 
-                option = scanner.nextInt();
-                scanner.nextLine();
+                if (scanner.hasNextInt()) {
+                    option = scanner.nextInt();
+                    scanner.nextLine();
 
-                try {
-                    switch (option) {
-                        case 1:
-                            OperateDatabases.showDatabases(statement, EXCLUDED_DATABASES);
-                            break;
-                        case 2:
-                            DatabaseManager.createDatabase(statement, scanner);
-                            break;
-                        case 3:
-                            DatabaseManager.deleteDatabase(statement, scanner);
-                            break;
-                        case 0:
-                            System.out.println("Exiting...");
-                            break;
-                        default:
-                            System.out.println("Invalid option. Please, try again.");
-                            break;
+                    try {
+                        switch (option) {
+                            case 1:
+                                OperateDatabases.showDatabases(statement, EXCLUDED_DATABASES);
+                                break;
+                            case 2:
+                                DatabaseManager.createDatabase(statement, scanner);
+                                break;
+                            case 3:
+                                DatabaseManager.deleteDatabase(statement, scanner);
+                                break;
+                            case 0:
+                                System.out.println("Exiting...");
+                                break;
+                            default:
+                                System.out.println("Invalid option. Please, try again.");
+                                break;
+                        }
+                    } catch (SQLException e) {
+                        System.out.println("Database error: " + e.getMessage());
                     }
-                } catch (SQLException e) {
-                    System.out.println("Database error: " + e.getMessage());
+                } else {
+                    System.out.println("Invalid input. Please enter a valid number.");
+                    scanner.nextLine();
                 }
             } while (option != 0);
         } catch (SQLException e) {
@@ -84,6 +80,11 @@ public class Main {
         }
     }
 }
+
+
+
+
+
 
 
 

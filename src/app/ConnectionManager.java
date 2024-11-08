@@ -8,8 +8,17 @@ public class ConnectionManager {
     private static Connection connection;
 
     public static boolean initialize(String url, String user, String password) {
-        if (connection == null) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC Driver not found: " + e.getMessage());
+            return false;
+        }
+
+        if (connection == null || !isConnectionActive()) {
             try {
+                closeConnection();
+
                 connection = DriverManager.getConnection(url, user, password);
                 System.out.println("Connection established successfully.");
                 return true;
@@ -42,6 +51,15 @@ public class ConnectionManager {
             }
         }
     }
+
+    private static boolean isConnectionActive() {
+        try {
+            return connection != null && !connection.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
 }
+
 
 

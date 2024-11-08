@@ -15,8 +15,6 @@ public class DatabaseManager {
         System.out.println("Database '" + dbName + "' created successfully.");
     }
 
-    // Pide al usuario una base de datos para eliminar o volver al menu en caso de que no lo haga
-
     public static void deleteDatabase(Statement statement, Scanner scanner) throws SQLException {
         while (true) {
             String sql = "SHOW DATABASES";
@@ -61,7 +59,7 @@ public class DatabaseManager {
             } catch (InputMismatchException e) {
                 System.out.println("\n=============================================");
                 System.out.println("Invalid input. Please enter a valid number.");
-                scanner.nextLine();  // Limpiar el buffer para evitar un bucle infinito
+                scanner.nextLine();
                 continue;
             }
 
@@ -72,7 +70,7 @@ public class DatabaseManager {
             if (confirmation.equalsIgnoreCase("y")) {
                 statement.executeUpdate("DROP DATABASE " + selectedDatabase);
                 System.out.println("Database '" + selectedDatabase + "' deleted successfully.");
-                break; // Salir del bucle después de eliminar la base de datos
+                break;
             } else {
                 System.out.println("Operation canceled. The database was not deleted.");
             }
