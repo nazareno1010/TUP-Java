@@ -15,6 +15,12 @@ import static table.TableManager.showTables;
 
 public class OperateDatabases {
 
+    public static String convertSlashesToBackslashes(String filePath) {
+        // Reemplaza las barras inclinadas (/) por barras invertidas (\\)
+        return filePath.replace("/", "\\");
+    }
+
+
     public static List<String> showDatabases(Statement statement, Set<String> excludedDatabases) throws SQLException {
         ResultSet resultSet = statement.executeQuery("SHOW DATABASES");
         List<String> databases = new ArrayList<>();
@@ -68,12 +74,19 @@ public class OperateDatabases {
 
             String databaseName = databases.get(dbIndex);
 
-            // 2. Solicitar al usuario la ruta de guardado
-            System.out.print("Enter the file path to save the CSV (e.g., C:\\exports\\database.csv): ");
+            // Solicitar al usuario la ruta de guardado
+            System.out.print("Enter the file path to save the CSV (e.g., C:/exports/database.csv): ");
             String filePath = scanner.nextLine();
 
-            // 3. Exportar cada tabla en la base de datos seleccionada a un archivo CSV
+            // Convertir las barras inclinadas a barras invertidas
+            filePath = convertSlashesToBackslashes(filePath);
+
+            // Verificar el valor de filePath después de la conversión
+            System.out.println("Converted file path: " + filePath);
+
+            // Exportar la base de datos a la ruta modificada
             exportTablesToCSV(databaseName, filePath, conn);
+
 
             System.out.println("Database exported successfully to " + filePath);
         } catch (SQLException e) {

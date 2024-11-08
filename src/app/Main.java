@@ -43,7 +43,7 @@ public class Main {
                 System.out.println("1. Show Databases");
                 System.out.println("2. Create Database");
                 System.out.println("3. Delete Database");
-                System.out.println("4. Export Database to .CVS");
+                System.out.println("4. Export Database to .CSV");
                 System.out.println("0. Exit");
                 System.out.print("Select an option: ");
 
