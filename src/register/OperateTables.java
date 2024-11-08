@@ -33,10 +33,10 @@ public class OperateTables {
                     RegisterManager.CreateRegister(statement, selectedTable);
                     break;
                 case 2:
+                    RegisterManager.readRegister(statement, selectedTable);
                     break;
-//                case 3:
-//                  RegisterManager.UpdateRegister(statement, selectedTable);
-//                    break;
+                case 0:
+                    break;
 //                case 4:
 //                  RegisterManager.DeleteRegister(statement, selectedTable);
 //                    break;
@@ -51,7 +51,7 @@ public class OperateTables {
                     break;
             }
 
-        } while (option != 1);
+        } while (option != 0);
     }
 
 }

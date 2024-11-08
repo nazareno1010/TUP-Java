@@ -10,7 +10,67 @@ import java.util.Scanner;
 
 public class RegisterManager {
 
-        public static void CreateRegister(Statement statement, String selectedTable) throws SQLException {
+    public static void readRegister(Statement statement, String selectedTable) throws SQLException {
+        System.out.println("\n===== Viewing Records from Table: " + selectedTable + " =====");
+
+        // Obtener columnas y calcular anchos máximos
+        ResultSet columnsResultSet = statement.executeQuery("SHOW COLUMNS FROM " + selectedTable);
+        List<String> columns = new ArrayList<>();
+        Map<String, Integer> columnWidths = new HashMap<>();
+
+        while (columnsResultSet.next()) {
+            String columnName = columnsResultSet.getString("Field");
+            columns.add(columnName);
+            columnWidths.put(columnName, columnName.length()); // Inicializar ancho mínimo como el del nombre de la columna
+        }
+
+        // Obtener los registros para calcular el ancho máximo de cada columna
+        String query = "SELECT * FROM " + selectedTable;
+        ResultSet resultSet = statement.executeQuery(query);
+        List<Map<String, String>> rows = new ArrayList<>();
+
+        while (resultSet.next()) {
+            Map<String, String> row = new HashMap<>();
+            for (String column : columns) {
+                String value = resultSet.getString(column);
+                row.put(column, value);
+
+                // Actualizar el ancho máximo de cada columna
+                if (value != null && value.length() > columnWidths.get(column)) {
+                    columnWidths.put(column, value.length());
+                }
+            }
+            rows.add(row);
+        }
+
+        // Imprimir encabezados con la alineación
+        for (String column : columns) {
+            System.out.print(padRight(column, columnWidths.get(column)) + " | ");
+        }
+        System.out.println();
+        System.out.println("-".repeat(columnWidths.values().stream().mapToInt(Integer::intValue).sum() + columns.size() * 3));
+
+        // Imprimir cada fila con alineación
+        for (Map<String, String> row : rows) {
+            for (String column : columns) {
+                String value = row.get(column);
+                System.out.print(padRight(value != null ? value : "NULL", columnWidths.get(column)) + " | ");
+            }
+            System.out.println();
+        }
+
+        System.out.println("===== End of Records =====");
+    }
+
+    // Método auxiliar para alinear texto a la derecha con un ancho específico
+    private static String padRight(String text, int length) {
+        return String.format("%-" + length + "s", text);
+    }
+
+
+
+
+    public static void CreateRegister(Statement statement, String selectedTable) throws SQLException {
             Scanner scanner = new Scanner(System.in);
 
             // Obtener columnas y tipos de datos de la tabla seleccionada
