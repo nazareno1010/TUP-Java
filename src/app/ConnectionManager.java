@@ -9,7 +9,6 @@ public class ConnectionManager {
 
     public static boolean initialize(String url, String username, String password) {
         if (connection != null) {
-            // Si ya hay una conexión activa, no es necesario volver a inicializar
             return true;
         }
 

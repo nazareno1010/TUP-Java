@@ -13,9 +13,7 @@ public class ConfigManager {
     private static Map<String, String> userCredentials = new HashMap<>();
     private static String currentUsername;
     private static String currentPassword;
-    // Usar la variable loggedIn existente
     private static boolean loggedIn = false;
-    // Nueva variable para almacenar usuarios autenticados
     private static Set<String> authenticatedUsers = new HashSet<>();
 
     public static void loadConfig() {
@@ -212,52 +210,44 @@ public class ConfigManager {
     private static boolean createNewUser(Scanner scanner) {
         while (true) {
             System.out.println("\n===== Create New User =====");
-
-            // Mostrar un mensaje para permitir la opción de regresar al menú
             System.out.println("Enter '0' to return to the main menu at any point.");
-
-            // Pedir el nombre de usuario
             System.out.print("Enter new username: ");
             String newUsername = scanner.nextLine().trim();
 
             if (newUsername.equals("0")) {
-                return false;  // Regresar al menú principal si se presiona 0
+                return false;
             }
 
-            // Pedir la URL de la base de datos
             System.out.print("Enter database URL: ");
             String newURL = scanner.nextLine().trim();
 
             if (newURL.equals("0")) {
-                return false;  // Regresar al menú principal si se presiona 0
+                return false;
             }
 
-            // Pedir la contraseña
             System.out.print("Enter password: ");
             String newPassword = scanner.nextLine().trim();
 
             if (newPassword.equals("0")) {
-                return false;  // Regresar al menú principal si se presiona 0
+                return false;
             }
 
-            // Verificar si el usuario y la contraseña ya existen
             for (Map.Entry<String, String> entry : userCredentials.entrySet()) {
                 if (entry.getKey().equals(newUsername) && entry.getValue().equals(newPassword) && URL.equals(newURL)) {
                     System.out.println("This user already exists with the same credentials. Returning to the main menu.");
-                    return false;  // Regresar al menú si el usuario ya existe con las mismas credenciales
+                    return false;
                 }
             }
 
-            // Si no existe el usuario, proceder a crear el nuevo usuario
             currentUsername = newUsername;
             URL = newURL;
             currentPassword = newPassword;
 
             if (validateConnection()) {
-                userCredentials.put(currentUsername, currentPassword);  // Guardar las nuevas credenciales
-                saveConfig();  // Guardar la configuración en el archivo
+                userCredentials.put(currentUsername, currentPassword);
+                saveConfig();
                 System.out.println("New user created successfully.");
-                return true;  // Usuario creado exitosamente
+                return true;
             } else {
                 System.out.println("Connection failed. Please re-enter all credentials.");
             }
@@ -294,24 +284,21 @@ public class ConfigManager {
                 }
 
                 if (selectedUser != null) {
-                    // Si se seleccionó un usuario válido
                     String confirmation;
-                    // Bucle para pedir confirmación hasta que el usuario ingrese una respuesta válida
                     while (true) {
                         System.out.println("Are you sure you want to delete the user '" + selectedUser + "'? (y/n): ");
-                        confirmation = scanner.nextLine().trim().toLowerCase();  // Convertir entrada a minúsculas para manejar ambos casos
+                        confirmation = scanner.nextLine().trim().toLowerCase();
 
                         if (confirmation.equals("y") || confirmation.equals("n")) {
-                            break;  // Salir del bucle si la respuesta es válida
+                            break;
                         } else {
-                            // Si la respuesta es inválida, volver a preguntar
                             System.out.println("Invalid input. Please enter 'yes' or 'no'.");
                         }
                     }
 
                     if (confirmation.equals("y")) {
                         userCredentials.remove(selectedUser);
-                        authenticatedUsers.remove(selectedUser); // Eliminar de la lista de autenticados también si corresponde
+                        authenticatedUsers.remove(selectedUser);
                         saveConfig();
                         System.out.println("User '" + selectedUser + "' deleted successfully.");
                         return true;
@@ -320,11 +307,10 @@ public class ConfigManager {
                         return false;
                     }
                 } else {
-                    // Si la selección no es válida, mostrar mensaje y volver a pedir la opción
                     System.out.println("Invalid selection. Please try again.");
                 }
             } else {
-                scanner.nextLine();  // Limpiar el buffer en caso de entrada no válida
+                scanner.nextLine();
                 System.out.println("Invalid input. Please enter a valid number.");
             }
         }
@@ -350,7 +336,7 @@ public class ConfigManager {
     private static boolean validateConnection() {
         boolean success = ConnectionManager.initialize(URL, currentUsername, currentPassword);
         if (success) {
-            loggedIn = true; // Asegúrate de actualizar el estado de loggedIn
+            loggedIn = true;
         } else {
             System.out.println("Error connecting to the database.");
             loggedIn = false;
