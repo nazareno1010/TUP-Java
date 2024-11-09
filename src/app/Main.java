@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 import static table.OperateDatabases.exportDatabaseToCSV;
+import static table.OperateDatabases.interfaceTable;
+import static table.TableManager.showTables;
 
 public class Main {
     public static final Set<String> EXCLUDED_DATABASES = new HashSet<>();
@@ -44,6 +46,7 @@ public class Main {
                 System.out.println("2. Create Database");
                 System.out.println("3. Delete Database");
                 System.out.println("4. Export Database to .CSV");
+                System.out.println("5. Work With DataBases");
                 System.out.println("0. Exit");
                 System.out.print("Select an option: ");
 
@@ -63,7 +66,10 @@ public class Main {
                                 ConfigManager.deleteUser(scanner);
                                 break;
                             case 4:
-                                exportDatabaseToCSV();
+                                exportDatabaseToCSV(statement);
+                                break;
+                            case 5:
+                                interfaceTable(statement);
                                 break;
                             case 0:
                                 System.out.println("Exiting...");
