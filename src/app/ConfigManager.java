@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ConfigManager {
     private static final String CONFIG_FILE = "config.txt";
@@ -11,6 +13,10 @@ public class ConfigManager {
     private static Map<String, String> userCredentials = new HashMap<>();
     private static String currentUsername;
     private static String currentPassword;
+    // Usar la variable loggedIn existente
+    private static boolean loggedIn = false;
+    // Nueva variable para almacenar usuarios autenticados
+    private static Set<String> authenticatedUsers = new HashSet<>();
 
     public static void loadConfig() {
         File configFile = new File(CONFIG_FILE);
@@ -53,7 +59,6 @@ public class ConfigManager {
         loadConfig();
 
         if (URL == null) {
-            // Solicitar y guardar nuevas credenciales hasta que sean correctas (primera configuración)
             boolean credentialsValid = false;
             while (!credentialsValid) {
                 requestNewCredentials(scanner, false);
@@ -66,98 +71,261 @@ public class ConfigManager {
                 }
             }
         } else {
-            while (true) {
+            boolean validLogin = false;
+            while (!validLogin) {
                 int choice = getUserChoice(scanner);
                 if (choice == 1) {
-                    if (loginExistingUser(scanner)) {
-                        break;
-                    }
+                    validLogin = loginExistingUser(scanner);
                 } else if (choice == 2) {
-                    if (createNewUser(scanner)) {
-                        break;
-                    }
+                    validLogin = createNewUser(scanner);
+                } else if (choice == 3) {
+                    deleteUser(scanner);
+                } else if (choice == 4) {
+                    listUsers(scanner);
+                }
+
+                if (validLogin) {
+                    break;
                 }
             }
         }
     }
+
+    private static boolean loginExistingUser(Scanner scanner) {
+        int choice = -1;
+
+        while (choice != 0) {
+            System.out.println("\nRegistered Users:");
+            int count = 1;
+            for (String username : userCredentials.keySet()) {
+                System.out.println(count + ". " + username);
+                count++;
+            }
+
+            System.out.print("\nSelect a user by number to log in or press 0 to return: ");
+
+            if (scanner.hasNextInt()) {
+                choice = scanner.nextInt();
+                scanner.nextLine();
+
+                if (choice == 0) {
+                    return false;
+                }
+
+                int index = 1;
+                String selectedUser = null;
+                for (String username : userCredentials.keySet()) {
+                    if (index == choice) {
+                        selectedUser = username;
+                        break;
+                    }
+                    index++;
+                }
+
+                if (selectedUser != null) {
+                    currentUsername = selectedUser;
+                    currentPassword = userCredentials.get(currentUsername);
+
+                    System.out.println("Welcome back, " + currentUsername + "!");
+                    if (validateConnection()) {
+                        System.out.println("Connection established successfully.");
+                        loggedIn = true;
+                        return true;
+                    } else {
+                        System.out.println("Connection failed.");
+                        return false;
+                    }
+                } else {
+                    System.out.println("Invalid selection. Please choose a valid user.");
+                }
+            } else {
+                System.out.println("Invalid input. Please select a valid user.");
+                scanner.nextLine();
+            }
+        }
+        return false;
+    }
+
 
     private static int getUserChoice(Scanner scanner) {
         int choice = 0;
         while (true) {
             System.out.println("\n=============================================");
             System.out.println("Would you like to:");
-            System.out.println("1. Login with an existing user");
+            System.out.println("1. List all users and select one to log in");
             System.out.println("2. Create a new user");
+            System.out.println("3. Delete a user (you must be logged in)");
             System.out.print("Select an option: ");
 
             if (scanner.hasNextInt()) {
                 choice = scanner.nextInt();
                 scanner.nextLine();
-                if (choice == 1 || choice == 2) {
+                if (choice >= 1 && choice <= 3) {
                     break;
                 }
             } else {
                 scanner.nextLine();
             }
-            System.out.println("Invalid option. Please enter 1 or 2.");
+            System.out.println("Invalid option. Please enter a number between 1 and 3.");
         }
         return choice;
     }
 
-    private static boolean loginExistingUser(Scanner scanner) {
-        System.out.print("Enter username: ");
-        currentUsername = scanner.nextLine();
-
-        if (!userCredentials.containsKey(currentUsername)) {
-            System.out.println("Username not found. Returning to main menu.");
-            return false;
+    private static void listUsers(Scanner scanner) {
+        System.out.println("\nRegistered Users:");
+        int count = 1;
+        for (String username : userCredentials.keySet()) {
+            System.out.println(count + ". " + username);
+            count++;
         }
+        System.out.print("\nSelect a user by number to log in or press 0 to return: ");
 
-        while (true) {
-            System.out.print("Enter password: ");
-            String enteredPassword = scanner.nextLine();
+        if (scanner.hasNextInt()) {
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            if (choice == 0) return;
 
-            if (userCredentials.get(currentUsername).equals(enteredPassword)) {
-                currentPassword = enteredPassword;
-                System.out.println("Login successful.");
-                return validateConnection();
-            } else {
-                System.out.println("Incorrect password. Please try again.");
+            int index = 1;
+            for (String username : userCredentials.keySet()) {
+                if (index == choice) {
+                    currentUsername = username;
+                    currentPassword = userCredentials.get(username);
+
+                    if (validateConnection()) {
+                        System.out.println("Login successful.");
+                        return;
+                    } else {
+                        System.out.println("Failed to connect with selected user. Returning to menu.");
+                        currentUsername = null;
+                        currentPassword = null;
+                    }
+                }
+                index++;
             }
+            System.out.println("Invalid selection. Returning to menu.");
+        } else {
+            scanner.nextLine();
+            System.out.println("Invalid input. Returning to menu.");
         }
     }
 
     private static boolean createNewUser(Scanner scanner) {
         while (true) {
+            System.out.println("\n===== Create New User =====");
+
+            // Mostrar un mensaje para permitir la opción de regresar al menú
+            System.out.println("Enter '0' to return to the main menu at any point.");
+
+            // Pedir el nombre de usuario
             System.out.print("Enter new username: ");
-            String newUsername = scanner.nextLine();
+            String newUsername = scanner.nextLine().trim();
 
+            if (newUsername.equals("0")) {
+                return false;  // Regresar al menú principal si se presiona 0
+            }
+
+            // Pedir la URL de la base de datos
             System.out.print("Enter database URL: ");
-            String newURL = scanner.nextLine();
+            String newURL = scanner.nextLine().trim();
 
+            if (newURL.equals("0")) {
+                return false;  // Regresar al menú principal si se presiona 0
+            }
+
+            // Pedir la contraseña
             System.out.print("Enter password: ");
-            String newPassword = scanner.nextLine();
+            String newPassword = scanner.nextLine().trim();
 
-            if (userCredentials.containsKey(newUsername) && userCredentials.get(newUsername).equals(newPassword) && URL.equals(newURL)) {
-                System.out.println("This user already exists with the same credentials. Returning to the main menu.");
-                return false;
+            if (newPassword.equals("0")) {
+                return false;  // Regresar al menú principal si se presiona 0
             }
 
-            if (userCredentials.containsKey(newUsername)) {
-                System.out.println("Username already exists but with different credentials. Continuing with the creation of a new user.");
+            // Verificar si el usuario y la contraseña ya existen
+            for (Map.Entry<String, String> entry : userCredentials.entrySet()) {
+                if (entry.getKey().equals(newUsername) && entry.getValue().equals(newPassword) && URL.equals(newURL)) {
+                    System.out.println("This user already exists with the same credentials. Returning to the main menu.");
+                    return false;  // Regresar al menú si el usuario ya existe con las mismas credenciales
+                }
             }
 
+            // Si no existe el usuario, proceder a crear el nuevo usuario
             currentUsername = newUsername;
             URL = newURL;
             currentPassword = newPassword;
 
             if (validateConnection()) {
-                userCredentials.put(currentUsername, currentPassword);
-                saveConfig();
+                userCredentials.put(currentUsername, currentPassword);  // Guardar las nuevas credenciales
+                saveConfig();  // Guardar la configuración en el archivo
                 System.out.println("New user created successfully.");
-                return true;
+                return true;  // Usuario creado exitosamente
             } else {
                 System.out.println("Connection failed. Please re-enter all credentials.");
+            }
+        }
+    }
+
+    public static boolean deleteUser(Scanner scanner) {
+        while (true) {
+            System.out.println("\nRegistered Users:");
+            int count = 1;
+            for (String username : userCredentials.keySet()) {
+                System.out.println(count + ". " + username);
+                count++;
+            }
+
+            System.out.print("\nSelect a user by number to delete or press 0 to return: ");
+
+            if (scanner.hasNextInt()) {
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+
+                if (choice == 0) {
+                    return false;
+                }
+
+                int index = 1;
+                String selectedUser = null;
+                for (String username : userCredentials.keySet()) {
+                    if (index == choice) {
+                        selectedUser = username;
+                        break;
+                    }
+                    index++;
+                }
+
+                if (selectedUser != null) {
+                    // Si se seleccionó un usuario válido
+                    String confirmation;
+                    // Bucle para pedir confirmación hasta que el usuario ingrese una respuesta válida
+                    while (true) {
+                        System.out.println("Are you sure you want to delete the user '" + selectedUser + "'? (y/n): ");
+                        confirmation = scanner.nextLine().trim().toLowerCase();  // Convertir entrada a minúsculas para manejar ambos casos
+
+                        if (confirmation.equals("y") || confirmation.equals("n")) {
+                            break;  // Salir del bucle si la respuesta es válida
+                        } else {
+                            // Si la respuesta es inválida, volver a preguntar
+                            System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+                        }
+                    }
+
+                    if (confirmation.equals("y")) {
+                        userCredentials.remove(selectedUser);
+                        authenticatedUsers.remove(selectedUser); // Eliminar de la lista de autenticados también si corresponde
+                        saveConfig();
+                        System.out.println("User '" + selectedUser + "' deleted successfully.");
+                        return true;
+                    } else {
+                        System.out.println("User deletion canceled.");
+                        return false;
+                    }
+                } else {
+                    // Si la selección no es válida, mostrar mensaje y volver a pedir la opción
+                    System.out.println("Invalid selection. Please try again.");
+                }
+            } else {
+                scanner.nextLine();  // Limpiar el buffer en caso de entrada no válida
+                System.out.println("Invalid input. Please enter a valid number.");
             }
         }
     }
@@ -175,13 +343,22 @@ public class ConfigManager {
         currentPassword = scanner.nextLine();
     }
 
+    public static boolean isLoggedIn() {
+        return loggedIn;
+    }
+
     private static boolean validateConnection() {
         boolean success = ConnectionManager.initialize(URL, currentUsername, currentPassword);
-        if (!success) {
+        if (success) {
+            loggedIn = true; // Asegúrate de actualizar el estado de loggedIn
+        } else {
             System.out.println("Error connecting to the database.");
+            loggedIn = false;
         }
         return success;
     }
+
+
 
     public static String getURL() {
         return URL;
@@ -195,6 +372,8 @@ public class ConfigManager {
         return currentPassword;
     }
 }
+
+
 
 
 

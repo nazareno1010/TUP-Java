@@ -25,16 +25,16 @@ public class Main {
     public static void main(String[] args) {
         ConfigManager.loginUser(scanner);
 
-        if (ConnectionManager.initialize(ConfigManager.getURL(), ConfigManager.getUsername(), ConfigManager.getPassword())) {
+        if (ConfigManager.isLoggedIn() && ConnectionManager.isConnected()) {
+            System.out.println("Proceeding to database interface...");
             interfaceDatabase();
         } else {
-            System.out.println("Unable to establish a database connection.");
+            System.out.println("Could not establish a connection to the database or no user selected.");
         }
 
         scanner.close();
         ConnectionManager.closeConnection();
     }
-
     public static void interfaceDatabase() {
         try (Statement statement = ConnectionManager.getConnection().createStatement()) {
             int option = -1;
@@ -60,7 +60,7 @@ public class Main {
                                 DatabaseManager.createDatabase(statement, scanner);
                                 break;
                             case 3:
-                                DatabaseManager.deleteDatabase(statement, scanner);
+                                ConfigManager.deleteUser(scanner);
                                 break;
                             case 4:
                                 exportDatabaseToCSV();
@@ -85,6 +85,12 @@ public class Main {
         }
     }
 }
+
+
+
+
+
+
 
 
 
