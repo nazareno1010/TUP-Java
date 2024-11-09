@@ -63,13 +63,12 @@ public class Main {
                                 DatabaseManager.createDatabase(statement, scanner);
                                 break;
                             case 3:
-                                ConfigManager.deleteUser(scanner);
+                                DatabaseManager.deleteDatabase(statement, scanner);
                                 break;
                             case 4:
                                 exportDatabaseToCSV(statement);
                                 break;
                             case 5:
-                                interfaceTable(statement);
                                 break;
                             case 0:
                                 System.out.println("Exiting...");
@@ -78,6 +77,7 @@ public class Main {
                                 System.out.println("Invalid option. Please, try again.");
                                 break;
                         }
+
                     } catch (SQLException e) {
                         System.out.println("Database error: " + e.getMessage());
                     }
