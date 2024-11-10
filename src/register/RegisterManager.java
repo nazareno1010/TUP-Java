@@ -194,10 +194,24 @@ public class RegisterManager {
             return;
         }
 
-        // Solicitar el ID del registro a eliminar
-        System.out.print("Enter the ID of the record you want to delete: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // Consumir la nueva línea
+        //Solicita el id del registro al usuario
+        int id;
+        try {
+            System.out.print("Enter the ID of the record you want delete: ");
+            id = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid numeric ID.");
+            return;
+        }
+
+
+        // Verificar si el ID existe en la tabla
+        ResultSet idCheckResultSet = statement.executeQuery("SELECT * FROM " + selectedTable + " WHERE id = " + id);
+        if (!idCheckResultSet.next()) {
+            System.out.println("No record found with the specified ID.");
+            return;
+        }
+
 
         // Confirmar eliminación
         System.out.print("Are you sure you want to delete the record with ID " + id + "? (y/n): ");
@@ -231,9 +245,23 @@ public class RegisterManager {
         }
 
         // Solicitar el ID del registro a actualizar
-        System.out.print("Enter the ID of the record you want to update: ");
-        int id = scanner.nextInt();
-        scanner.nextLine(); // Consumir la nueva línea
+        int id;
+        try {
+            System.out.print("Enter the ID of the record you want update: ");
+            id = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid numeric ID.");
+            return;
+        }
+
+
+        // Verificar si el ID existe en la tabla
+        ResultSet idCheckResultSet = statement.executeQuery("SELECT * FROM " + selectedTable + " WHERE id = " + id);
+        if (!idCheckResultSet.next()) {
+            System.out.println("No record found with the specified ID.");
+            return;
+        }
+
 
         // Obtener las columnas y tipos de datos de la tabla
         ResultSet columnsResultSet = statement.executeQuery("SHOW COLUMNS FROM " + selectedTable);
