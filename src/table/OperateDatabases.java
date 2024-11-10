@@ -2,6 +2,10 @@ package table;
 
 import register.OperateTables;
 import app.Main;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,6 +13,11 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import static table.TableManager.showTables;
 
@@ -118,3 +127,4 @@ public class OperateDatabases {
         } while (option != 0);
     }
 }
+
