@@ -1,4 +1,4 @@
-    --- FIXES POR HACER ---
+    --- FIXES MAIN ---
 
 FIX 1: List y Delete en Login sin usuarios creados.
 
@@ -70,3 +70,20 @@ FIX 11: CreateTable id
     --> Todas las tablas tienen id. Siempre deberia de ser autoincremental, pero
     el nombre de 'id' va a variar de tabla en tabla.
 
+
+    --- FIXES CSV ---
+
+FIX 12: Export specific table
+
+    --> Muestra DBs predeterminadas (sakila, world)
+
+FIX 13: Select DB no muestra '0. Exit'
+
+
+    --- FEATURES ---
+
+1. Crear relaciones relaciones entre tablas por campos (eg. id)
+
+2. Hacer comandos SQL de forma directa
+
+3. Exportar a otros formatos (.xlsx [excel], .sql [database], .bak, etc)
