@@ -1,0 +1,72 @@
+    --- FIXES POR HACER ---
+
+FIX 1: List y Delete en Login sin usuarios creados.
+
+    Cuando no tenes usuarios en login, si mostras los usuarios te muestra una lista vacia
+    y te hace seleccionar un numero o cero para volver.
+
+    --> Deberia decir que no hay usuarios y preguntar si desea crear uno. Debe preguntar,
+    porque el usuario puede no querer crear un usuario
+
+    Sucede lo mismo para eliminar usuarios.
+
+FIX 2: Database Interface no permite configurar usuarios.
+
+        Desde la interfaz principal no se puede ingresar a la interfaz de usuarios:
+    no se pueden listar, eliminar, crear, o cambiar de usuario de forma local.
+
+FIX 3: List de usuarios en Login
+
+        El nombre del usuario no deberia ser el nombre de la config:
+    --> Deberia tener un nombre para el conjunto de credenciales, para poder crear un usuario,
+    por ejemplo, llamado MySQL con las 3 credenciales de acceso.
+
+FIX 4: Al eliminar usuarios y pedir y/n hay un salto de linea.
+
+FIX 5: ShowDatabases en orden alfabetico
+
+    --> Deberia mostrar en orden de creacion (default).
+
+FIX 6: CreateField datatype
+
+        Al crear un campo en una tabla permite crear campos con datatype invalidos:
+    --> Deberia comprobar de alguna forma que el datatype sea valido.
+
+        Al confirmar que no sea desea crear campos en la tabla recien salta el error,
+    luego de lo cual devuelve a la interfaz principal en vez de la DB seleccionada.
+
+ FIX 7: CreateTables
+
+    A. Deberia decir en que DB estoy trabajando
+    B. Al crear una tabla y no agregar campos me lista las tablas en vez de volver
+       a OperateTables. Deberia listar las tablas como ya hace?
+
+ FIX 8: DeleteColumn enter name
+
+        Al eliminar un campo pide ingresar el nombre del campo:
+    --> Deberia pedir ingresar el numero del campo a eliminar en vez de ingresar el
+    nombre completo de dicho campo.
+
+        Al ingresar un nombre invalido devuelve a OperateTable, en vez de continuar
+    en la interfaz de eliminar.
+
+ FIX 9: OperateRegisters interface
+
+        La opcion 'read register' muestra todos los registros y 'Search register'
+    permite buscar por ID:
+
+    --> Los nombres tendrian que estar al reves, y 'Search register' deberia de ser la
+    opcion 5 por default para respetar las siglas de CRUD.
+
+ FIX 10: Update register mensaje
+
+    --> Hacer el mensaje de update register mas breve: Z z Z z Z
+    Enter the new value for 'campo2' (varchar(255)) or press Enter to keep the current value: naza1
+
+FIX 11: CreateTable id
+
+        Al crear una nueva tabla deberia permitir ingresar un nombre de id:
+
+    --> Todas las tablas tienen id. Siempre deberia de ser autoincremental, pero
+    el nombre de 'id' va a variar de tabla en tabla.
+
