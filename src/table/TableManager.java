@@ -297,7 +297,7 @@ public class TableManager {
         // Mostrar las tablas existentes después de crear la nueva tabla
         showTables(statement, selectedDatabase);
 
-//        scanner.close(); // Cerrar Scanner para liberar recursos
+//        scanner.close();
     }
 
 }
