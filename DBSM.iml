@@ -10,5 +10,6 @@
     <orderEntry type="library" name="mysql-connector-j-9.0.0" level="project" />
     <orderEntry type="library" name="mysql-connector-j-9.0.01" level="project" />
     <orderEntry type="library" name="mysql-connector-j-9.1.0" level="project" />
+    <orderEntry type="library" name="mysql-connector-j-9.0.02" level="project" />
   </component>
 </module>

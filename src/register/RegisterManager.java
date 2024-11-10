@@ -188,40 +188,40 @@ public class RegisterManager {
         Scanner scanner = new Scanner(System.in);
 
         // Solicitar el ID del registro a eliminar
-        System.out.print("Ingrese el ID del registro que desea eliminar: ");
+        System.out.print("Enter the ID of the record you want to delete: ");
         int id = scanner.nextInt();
         scanner.nextLine(); // Consumir la nueva línea
 
-        // Confirmación antes de eliminar el registro
-        System.out.print("¿Está seguro de que desea eliminar el registro con ID " + id + "? (s/n): ");
+        // Confirmar eliminación
+        System.out.print("Are you sure you want to delete the record with ID " + id + "? (y/n): ");
         String confirmation = scanner.nextLine();
 
-        if (confirmation.equalsIgnoreCase("s")) {
-            // Crear la consulta SQL para eliminar el registro
+        // Si la confirmación es "yes", proceder a eliminar
+        if (confirmation.equalsIgnoreCase("y")) {
             String query = "DELETE FROM " + selectedTable + " WHERE id = " + id;
 
-            // Ejecutar la consulta
             int rowsAffected = statement.executeUpdate(query);
 
             if (rowsAffected > 0) {
-                System.out.println("Registro eliminado exitosamente.");
+                System.out.println("Record deleted successfully.");
             } else {
-                System.out.println("No se encontró ningún registro con el ID proporcionado.");
+                System.out.println("No record found with the provided ID.");
             }
         } else {
-            System.out.println("Eliminación cancelada.");
+            System.out.println("Deletion cancelled.");
         }
     }
+
 
     public static void UpdateRegister(Statement statement, String selectedTable) throws SQLException {
         Scanner scanner = new Scanner(System.in);
 
         // Solicitar el ID del registro a actualizar
-        System.out.print("Ingrese el ID del registro que desea actualizar: ");
+        System.out.print("Enter the ID of the record you want to update: ");
         int id = scanner.nextInt();
         scanner.nextLine(); // Consumir la nueva línea
 
-        // Obtener las columnas y sus tipos de datos
+        // Obtener las columnas y tipos de datos de la tabla
         ResultSet columnsResultSet = statement.executeQuery("SHOW COLUMNS FROM " + selectedTable);
         Map<String, String> columnTypes = new LinkedHashMap<>();
 
@@ -229,56 +229,54 @@ public class RegisterManager {
             String columnName = columnsResultSet.getString("Field");
             String columnType = columnsResultSet.getString("Type");
 
-            // Ignorar la columna `id` ya que es la clave primaria
+            // Ignorar la columna `id` ya que no debe ser modificada
             if (!columnName.equalsIgnoreCase("id")) {
                 columnTypes.put(columnName, columnType);
             }
         }
 
-        // Solicitar los nuevos valores para las columnas
-        Map<String, String> updatedValues = new LinkedHashMap<>();
+        // Crear la parte de la consulta para actualizar
+        StringBuilder updateQuery = new StringBuilder("UPDATE " + selectedTable + " SET ");
+        boolean hasChanges = false;
+
+        // Pedir al usuario los nuevos valores para cada columna
         for (Map.Entry<String, String> entry : columnTypes.entrySet()) {
             String columnName = entry.getKey();
             String columnType = entry.getValue();
 
-            System.out.print("Ingrese el nuevo valor para la columna '" + columnName + "' (" + columnType + ") o presione Enter para omitir: ");
+            System.out.print("Enter the new value for '" + columnName + "' (" + columnType + ") or press Enter to keep the current value: ");
             String newValue = scanner.nextLine();
 
-            // Validar el tipo de dato si se ingresó un nuevo valor
+            // Si el usuario ingresó un valor, agregarlo a la consulta
             if (!newValue.isEmpty()) {
                 if (!isValidType(newValue, columnType)) {
-                    System.out.println("Error: tipo de dato no válido para la columna '" + columnName + "'. Solo admite " + columnType + ".");
-                    return; // Salir si hay un error de tipo de dato
+                    System.out.println("Error: Invalid data type for column '" + columnName + "'. Expected type: " + columnType + ".");
+                    return; // Salir si el tipo de dato es incorrecto
                 }
-                updatedValues.put(columnName, newValue);
+
+                updateQuery.append(columnName).append(" = '").append(newValue).append("', ");
+                hasChanges = true;
             }
         }
 
-        // Verificar si se ingresaron valores para actualizar
-        if (updatedValues.isEmpty()) {
-            System.out.println("No se ingresaron valores para actualizar. Operación cancelada.");
-            return;
-        }
+        // Verificar si se hicieron cambios
+        if (hasChanges) {
+            // Eliminar la última coma y espacio
+            updateQuery.setLength(updateQuery.length() - 2);
+            updateQuery.append(" WHERE id = ").append(id);
 
-        // Generar la consulta SQL para actualizar el registro
-        StringBuilder query = new StringBuilder("UPDATE " + selectedTable + " SET ");
-        for (Map.Entry<String, String> entry : updatedValues.entrySet()) {
-            query.append(entry.getKey()).append(" = '").append(entry.getValue()).append("', ");
-        }
+            // Ejecutar la consulta de actualización
+            int rowsAffected = statement.executeUpdate(updateQuery.toString());
 
-        query.setLength(query.length() - 2); // Eliminar la última coma
-        query.append(" WHERE id = ").append(id);
-
-        // Ejecutar la consulta
-        int rowsAffected = statement.executeUpdate(query.toString());
-
-        if (rowsAffected > 0) {
-            System.out.println("Registro actualizado exitosamente.");
+            if (rowsAffected > 0) {
+                System.out.println("Record updated successfully.");
+            } else {
+                System.out.println("No record found with the provided ID.");
+            }
         } else {
-            System.out.println("No se encontró ningún registro con el ID proporcionado.");
+            System.out.println("No changes made. Update cancelled.");
         }
     }
-
 
     // Método para validar el tipo de dato ingresado
     private static boolean isValidType(String value, String columnType) {
