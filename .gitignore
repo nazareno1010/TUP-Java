@@ -1,6 +1,7 @@
 config.txt
 .idea/workspace.xml
-
+.idea/misc.xml
+exported
 
 ### IntelliJ IDEA ###
 out/
