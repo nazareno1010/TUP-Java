@@ -187,6 +187,13 @@ public class RegisterManager {
     public static void DeleteRegister(Statement statement, String selectedTable) throws SQLException {
         Scanner scanner = new Scanner(System.in);
 
+        // Verificar si existen registros en la tabla
+        ResultSet countResultSet = statement.executeQuery("SELECT COUNT(*) AS count FROM " + selectedTable);
+        if (countResultSet.next() && countResultSet.getInt("count") == 0) {
+            System.out.println("No records found in the table. Cannot proceed with update.");
+            return;
+        }
+
         // Solicitar el ID del registro a eliminar
         System.out.print("Enter the ID of the record you want to delete: ");
         int id = scanner.nextInt();
@@ -215,6 +222,13 @@ public class RegisterManager {
 
     public static void UpdateRegister(Statement statement, String selectedTable) throws SQLException {
         Scanner scanner = new Scanner(System.in);
+
+        // Verificar si existen registros en la tabla
+        ResultSet countResultSet = statement.executeQuery("SELECT COUNT(*) AS count FROM " + selectedTable);
+        if (countResultSet.next() && countResultSet.getInt("count") == 0) {
+            System.out.println("No records found in the table. Cannot proceed with update.");
+            return;
+        }
 
         // Solicitar el ID del registro a actualizar
         System.out.print("Enter the ID of the record you want to update: ");
