@@ -22,7 +22,7 @@ public class OperateTables {
             System.out.println("3. Search Register With ID");
             System.out.println("4. Update Register");
             System.out.println("5. Delete Register");
-            System.out.println("6. Convert to .CSV");
+//            System.out.println("6. Convert to .CSV");
             System.out.println("0. Exit");
             System.out.print("Select an option: ");
 
@@ -45,9 +45,6 @@ public class OperateTables {
                 case 5:
                   RegisterManager.DeleteRegister(statement, selectedTable);
                     break;
-//                case 1:
-//                    System.out.println("Exiting...");
-//                    break;
                 case 0:
                     break;
                 default:

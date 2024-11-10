@@ -1,34 +1,31 @@
 package table;
 
-import app.ConnectionManager;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.*;
+import register.OperateTables;
+import app.Main;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
-import static app.Main.EXCLUDED_DATABASES;
-import static app.Main.scanner;
+
 import static table.TableManager.showTables;
 
 public class OperateDatabases {
+    // Ya no necesitamos la constante EXCLUDED_DATABASES aquí
+    // private static final Set<String> EXCLUDED_DATABASES = Main.EXCLUDED_DATABASES;
 
-    public static String convertSlashesToBackslashes(String filePath) {
-        // Reemplaza las barras inclinadas (/) por barras invertidas (\\)
-        return filePath.replace("/", "\\");
-    }
-
-
-    public static List<String> showDatabases(Statement statement, Set<String> excludedDatabases) throws SQLException {
+    // Ahora el método showDatabases acepta dos parámetros
+    public static void showDatabases(Statement statement, Set<String> excludedDatabases) throws SQLException {
         ResultSet resultSet = statement.executeQuery("SHOW DATABASES");
-        List<String> databases = new ArrayList<>();
-
         System.out.println("\n=============================================");
         System.out.println("Databases on the server:");
 
         int count = 1;
+        List<String> databases = new ArrayList<>();
+
+        // Recoger las bases de datos disponibles
         while (resultSet.next()) {
             String dbName = resultSet.getString(1);
             if (!excludedDatabases.contains(dbName)) {
@@ -38,144 +35,51 @@ public class OperateDatabases {
             }
         }
 
+        // Si no hay bases de datos disponibles, informamos y retornamos
         if (databases.isEmpty()) {
             System.out.println("No databases available.");
+            return;
         }
-        return databases;
-    }
 
-    // Modificación en exportDatabaseToCSV
-    public static void exportDatabaseToCSV(Statement statement) {
-        try {
-            List<String> databases = showDatabases(statement, EXCLUDED_DATABASES);
+        // Mostrar la opción para salir
+        System.out.println("0. Back");
 
-            System.out.println("Select the database to export:");
-            if (databases.isEmpty()) {
-                System.out.println("No available databases to export.");
-                return;
-            }
+        // Solicitar al usuario una opción
+        Scanner scanner = new Scanner(System.in);
 
-            int dbIndex;
-            while (true) {
-                System.out.print("Enter the number of the database: ");
-                if (scanner.hasNextInt()) {
-                    dbIndex = scanner.nextInt() - 1;
-                    scanner.nextLine();  // Consume newline
-                    if (dbIndex >= 0 && dbIndex < databases.size()) break;
+        while (true) {
+            System.out.print("Select a database by number (or enter 0 to go back): ");
+            if (scanner.hasNextInt()) {
+                int selectedIndex = scanner.nextInt(); // Variable definida dentro del ciclo
+                if (selectedIndex == 0) {
+                    System.out.println("Returning to the main menu...");
+                    return; // Salir de la función showDatabases y regresar al menú principal
+                }
+                if (selectedIndex >= 1 && selectedIndex <= databases.size()) {
+                    // Opción válida, salimos del bucle
+                    String selectedDatabase = databases.get(selectedIndex - 1);
+                    System.out.println("\nYou selected: " + selectedDatabase);
+
+                    // Cambiar a la base de datos seleccionada
+                    statement.execute("USE " + selectedDatabase);
+
+                    // Llamar a la función para gestionar las tablas
+                    interfaceTable(statement, selectedDatabase);
+                    break; // Salir después de la selección válida
                 } else {
-                    scanner.nextLine();  // Consume invalid input
+                    System.out.println("Invalid selection. Please select a valid number.");
                 }
-                System.out.println("Invalid choice. Try again.");
+            } else {
+                // Capturamos entradas no válidas
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next(); // Limpiar el buffer del scanner
             }
-
-            String databaseName = databases.get(dbIndex);
-            System.out.print("Enter the file path to save the CSV (e.g., C:/exports/database.csv): ");
-            String filePath = scanner.nextLine();
-            filePath = convertSlashesToBackslashes(filePath);
-
-            // Exporta cada tabla de la base de datos seleccionada
-            exportTablesToCSV(databaseName, filePath, statement.getConnection());
-            System.out.println("Database exported successfully to " + filePath);
-
-        } catch (SQLException e) {
-            System.out.println("Error retrieving databases: " + e.getMessage());
-        }
-    }
-
-
-    // Método para cerrar recursos
-    private static void closeResources(Statement statement, Connection conn) {
-        try {
-            if (statement != null && !statement.isClosed()) {
-                statement.close();
-            }
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-        } catch (SQLException e) {
-            System.out.println("Error closing resources: " + e.getMessage());
-        }
-    }
-
-
-    private static void exportTablesToCSV(String databaseName, String filePath, Connection conn) {
-        try (Statement stmt = conn.createStatement()) {
-            // Obtener nombres de tablas
-            ResultSet tables = stmt.executeQuery("SHOW TABLES FROM " + databaseName);
-
-            while (tables.next()) {
-                String tableName = tables.getString(1);
-                exportTableToCSV(databaseName, tableName, filePath, conn);
-            }
-        } catch (SQLException e) {
-            System.out.println("Error exporting tables: " + e.getMessage());
-        }
-    }
-
-    private static void exportTableToCSV(String databaseName, String tableName, String filePath, Connection conn) {
-        String csvFilePath = filePath + "_" + tableName + ".csv";
-        String query = "SELECT * FROM " + databaseName + "." + tableName;
-
-        try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query);
-             FileWriter csvWriter = new FileWriter(new File(csvFilePath))) {
-
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            // Escribir nombres de columna
-            for (int i = 1; i <= columnCount; i++) {
-                csvWriter.append(metaData.getColumnName(i));
-                if (i < columnCount) csvWriter.append(",");
-            }
-            csvWriter.append("\n");
-
-            // Escribir filas de datos
-            while (rs.next()) {
-                for (int i = 1; i <= columnCount; i++) {
-                    csvWriter.append(rs.getString(i));
-                    if (i < columnCount) csvWriter.append(",");
-                }
-                csvWriter.append("\n");
-            }
-
-            System.out.println("Table " + tableName + " exported to " + csvFilePath);
-        } catch (SQLException | IOException e) {
-            System.out.println("Error exporting table " + tableName + ": " + e.getMessage());
         }
     }
 
     // Método para gestionar las operaciones sobre las tablas de la base de datos seleccionada
-    public static void interfaceTable(Statement statement) throws SQLException {
+    public static void interfaceTable(Statement statement, String selectedDatabase) throws SQLException {
         Scanner scanner = new Scanner(System.in);
-
-        // Mostrar bases de datos disponibles
-        List<String> databases = showDatabases(statement, EXCLUDED_DATABASES);
-
-        if (databases.isEmpty()) {
-            System.out.println("No databases available to select.");
-            return;
-        }
-
-        // Permitir al usuario seleccionar una base de datos
-        System.out.println("\nSelect the database to work with:");
-        int dbIndex;
-        while (true) {
-            System.out.print("Enter the number of the database: ");
-            if (scanner.hasNextInt()) {
-                dbIndex = scanner.nextInt() - 1;
-                scanner.nextLine();  // Consumir el salto de línea
-                if (dbIndex >= 0 && dbIndex < databases.size()) break;
-            } else {
-                scanner.nextLine();  // Consumir la entrada inválida
-            }
-            System.out.println("Invalid choice. Try again.");
-        }
-
-        String selectedDatabase = databases.get(dbIndex);
-        System.out.println("You selected: " + selectedDatabase);
-
-        // Ahora que se seleccionó la base de datos, podemos entrar en la interfaz para gestionar las tablas de esa base
         int option;
         do {
             System.out.println("\n===== DBSM - Database Management System =====");
@@ -190,17 +94,22 @@ public class OperateDatabases {
 
             switch (option) {
                 case 1:
-                    showTables(statement, selectedDatabase); // Mostrar las tablas de la base de datos seleccionada
+                    // Mostrar las tablas en la base de datos seleccionada
+                    showTables(statement, selectedDatabase);
                     break;
                 case 2:
-                    TableManager.createTable(statement, selectedDatabase); // Crear una tabla en la base seleccionada
+                    // Crear una nueva tabla en la base de datos seleccionada
+                    TableManager.createTable(statement, selectedDatabase);
                     break;
                 case 3:
-                    TableManager.deleteTable(statement, selectedDatabase, scanner); // Eliminar una tabla en la base seleccionada
-                    break;
+                    // Eliminar una tabla de la base de datos seleccionada
+                    TableManager.deleteTable(statement, selectedDatabase, scanner);
+                    break;  // Añadido el `break` para que no pase al siguiente caso
                 case 0:
+                    // Regresar al menú de bases de datos
                     System.out.println("Returning to database selection...");
-                    return; // Salir de la interfaz de tablas y regresar a la selección de base de datos
+                    showDatabases(statement, Main.EXCLUDED_DATABASES); // Ahora pasamos el conjunto de bases excluidas
+                    return; // Salir del ciclo y regresar a la pantalla anterior
                 default:
                     System.out.println("Invalid option. Please, try again.");
                     break;
@@ -209,6 +118,3 @@ public class OperateDatabases {
         } while (option != 0);
     }
 }
-
-
-

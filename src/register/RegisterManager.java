@@ -127,7 +127,7 @@ public class RegisterManager {
         // Imprimir cada fila con alineación usando el método printTableRows
         printTableRows(rows, columns, columnWidths);
 
-        System.out.println("===== End of Records =====");
+        System.out.println("\n===== End of Records =====");
     }
 
 
