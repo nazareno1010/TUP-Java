@@ -84,7 +84,7 @@ public class TableManager {
             System.out.println("1. Add a new column");
             System.out.println("2. Delete a column");
             System.out.println("3. Work with registers");
-            System.out.println("4. Return to previous menu");
+            System.out.println("0. Return to previous menu");
             System.out.print("Select an option: ");
             int option = scanner.nextInt();
             scanner.nextLine(); // Consumir la nueva línea
@@ -169,7 +169,7 @@ public class TableManager {
                     OperateTables.interfaceRegister(statement, selectedTable);
                     break;
 
-                case 4:
+                case 0:
                     System.out.println("Returning to the previous menu...");
                     editfield = false;
                     break;
