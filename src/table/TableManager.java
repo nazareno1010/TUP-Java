@@ -402,9 +402,23 @@ public class TableManager {
                 System.out.println("Invalid table name. The name can only contain letters. Please try again.");
             }
         }
+        // Solicitar el nombre del campo ID y validar
+        String idFieldName = null;
+        boolean validIdFieldName = false;
+        while (!validIdFieldName) {
+            System.out.print("Enter the name for the ID field (or enter 0 to use default 'id'): ");
+            idFieldName = scanner.nextLine().trim();
+
+            // Usar el nombre predeterminado 'id' si el usuario ingresa 0
+            if (idFieldName.equals("0")) { idFieldName = "id";
+                validIdFieldName = true;
+            } else if (idFieldName.matches("[a-zA-Z]+")) { validIdFieldName = true;
+            } else { System.out.println("Invalid ID field name. The name can only contain letters. Please try again.");
+            }
+        }
 
         // Iniciar la consulta para crear la tabla con el campo 'id' como clave primaria auto incremental
-        StringBuilder createTableQuery = new StringBuilder("CREATE TABLE " + tableName + " (id INT AUTO_INCREMENT PRIMARY KEY");
+        StringBuilder createTableQuery = new StringBuilder("CREATE TABLE " + tableName + " (" + idFieldName + " INT AUTO_INCREMENT PRIMARY KEY");
 
         // Bucle para agregar más campos (columnas)
         boolean addMoreFields = true;

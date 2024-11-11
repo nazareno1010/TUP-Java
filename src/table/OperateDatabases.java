@@ -82,6 +82,7 @@ public class OperateDatabases {
         int option;
         do {
             System.out.println("\n===== DBSM - Database Management System =====");
+            System.out.println("You are working in "+selectedDatabase);
             System.out.println("1. Show Tables");
             System.out.println("2. Create Tables");
             System.out.println("3. Delete Tables");

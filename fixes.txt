@@ -27,21 +27,6 @@ FIX 6: CreateField datatype
         Al confirmar que no sea desea crear campos en la tabla recien salta el error,
     luego de lo cual devuelve a la interfaz principal en vez de la DB seleccionada.
 
- FIX 7: CreateTables
-
-    A. Deberia decir en que DB estoy trabajando
-    B. Al crear una tabla y no agregar campos me lista las tablas en vez de volver
-       a OperateTables. Deberia listar las tablas como ya hace?
-
- FIX 8: DeleteColumn enter name
-
-        Al eliminar un campo pide ingresar el nombre del campo:
-    --> Deberia pedir ingresar el numero del campo a eliminar en vez de ingresar el
-    nombre completo de dicho campo.
-
-        Al ingresar un nombre invalido devuelve a OperateTable, en vez de continuar
-    en la interfaz de eliminar.
-
  FIX 9: OperateRegisters interface
 
         La opcion 'read register' muestra todos los registros y 'Search register'
@@ -54,14 +39,6 @@ FIX 6: CreateField datatype
 
     --> Hacer el mensaje de update register mas breve: Z z Z z Z
     Enter the new value for 'campo2' (varchar(255)) or press Enter to keep the current value: naza1
-
-FIX 11: CreateTable id
-
-        Al crear una nueva tabla deberia permitir ingresar un nombre de id:
-
-    --> Todas las tablas tienen id. Siempre deberia de ser autoincremental, pero
-    el nombre de 'id' va a variar de tabla en tabla.
-
 
     --- FIXES CSV ---
 
