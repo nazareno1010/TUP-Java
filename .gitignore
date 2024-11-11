@@ -1,12 +1,14 @@
+### DBSM - Proyect ###
 config.txt
-.idea/workspace.xml
-.idea/misc.xml
 exported
 
 ### IntelliJ IDEA ###
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+src/META-INF
+.idea/workspace.xml
+.idea/misc.xml
 
 ### Eclipse ###
 .apt_generated
