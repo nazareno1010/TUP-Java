@@ -7,8 +7,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 src/META-INF
-.idea/workspace.xml
-.idea/misc.xml
+.idea/
 
 ### Eclipse ###
 .apt_generated

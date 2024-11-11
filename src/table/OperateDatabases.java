@@ -1,6 +1,5 @@
 package table;
 
-import register.OperateTables;
 import app.Main;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -115,6 +114,6 @@ public class OperateDatabases {
                     break;
             }
 
-        } while (option != 0);
+        } while (true);
     }
 }

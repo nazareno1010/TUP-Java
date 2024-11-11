@@ -40,7 +40,7 @@ public class DatabaseManager {
 
             System.out.println("0. Cancel and go back");
 
-            int choice = -1;
+            int choice;
 
             System.out.print("Enter the number of the database you want to delete: ");
             try {
