@@ -33,15 +33,15 @@ public class RegisterManager {
     public static void searchRegister(Statement statement, String selectedTable) throws SQLException {
         Scanner scanner = new Scanner(System.in);
 
-        // Solicitar el ID del registro a buscar
-        System.out.print("Ingrese el ID del registro que desea buscar: ");
+        // Request the ID of the record to search
+        System.out.print("Enter the ID of the record you want to search: ");
         int id = scanner.nextInt();
-        scanner.nextLine(); // Consumir la nueva línea
+        scanner.nextLine(); // Consume the new line
 
-        // Crear la consulta SQL para buscar el registro por su ID
+        // Create the SQL query to search for the record by its ID
         String query = "SELECT * FROM " + selectedTable + " WHERE id = " + id;
 
-        // Obtener las columnas antes de ejecutar la consulta del registro
+        // Get the columns before executing the record query
         List<String> columns = new ArrayList<>();
         Map<String, Integer> columnWidths = new HashMap<>();
         ResultSet columnsResultSet = statement.executeQuery("SHOW COLUMNS FROM " + selectedTable);
@@ -49,36 +49,36 @@ public class RegisterManager {
         while (columnsResultSet.next()) {
             String columnName = columnsResultSet.getString("Field");
             columns.add(columnName);
-            columnWidths.put(columnName, columnName.length()); // Inicializar ancho mínimo como el del nombre de la columna
+            columnWidths.put(columnName, columnName.length()); // Initialize minimum width as the column name length
         }
 
-        // Ejecutar la consulta para obtener el registro
+        // Execute the query to get the record
         ResultSet resultSet = statement.executeQuery(query);
 
-        // Verificar si el registro existe
+        // Check if the record exists
         if (resultSet.next()) {
-            System.out.println("\nRegistro encontrado:");
+            System.out.println("\nRecord found:");
 
-            // Obtener los valores del registro
+            // Get the record values
             Map<String, String> row = new HashMap<>();
             for (String column : columns) {
                 String value = resultSet.getString(column);
                 row.put(column, value);
 
-                // Actualizar el ancho máximo de cada columna
+                // Update the maximum width of each column
                 if (value != null && value.length() > columnWidths.get(column)) {
                     columnWidths.put(column, value.length());
                 }
             }
 
-            // Imprimir encabezados
+            // Print headers
             printTableHeaders(columns, columnWidths);
 
-            // Imprimir el valor del registro encontrado
+            // Print the value of the found record
             printTableRows(Collections.singletonList(row), columns, columnWidths);
 
         } else {
-            System.out.println("No se encontró ningún registro con el ID proporcionado.");
+            System.out.println("No record found with the provided ID.");
         }
     }
 
@@ -134,7 +134,7 @@ public class RegisterManager {
     public static void CreateRegister(Statement statement, String selectedTable) throws SQLException {
         Scanner scanner = new Scanner(System.in);
 
-        // Obtener columnas y tipos de datos de la tabla seleccionada
+        // Get columns and data types from the selected table
         ResultSet columnsResultSet = statement.executeQuery("SHOW COLUMNS FROM " + selectedTable);
         Map<String, String> columnTypes = new LinkedHashMap<>();
 
@@ -142,31 +142,31 @@ public class RegisterManager {
             String columnName = columnsResultSet.getString("Field");
             String columnType = columnsResultSet.getString("Type");
 
-            // Ignorar la columna `id` ya que es autoincremental y no debe ser modificada manualmente
+            // Ignore the `id` column since it is auto-increment and should not be manually modified
             if (!columnName.equalsIgnoreCase("id")) {
                 columnTypes.put(columnName, columnType);
             }
         }
 
-        // Crear el registro pidiendo los valores al usuario solo para las columnas distintas de `id`
+        // Create the record by requesting values from the user for columns other than `id`
         Map<String, String> values = new LinkedHashMap<>();
         for (Map.Entry<String, String> entry : columnTypes.entrySet()) {
             String columnName = entry.getKey();
             String columnType = entry.getValue();
 
-            System.out.print("Ingrese el valor para la columna '" + columnName + "' (" + columnType + "): ");
+            System.out.print("Enter the value for column '" + columnName + "' (" + columnType + "): ");
             String value = scanner.nextLine();
 
-            // Validar el tipo de dato
+            // Validate the data type
             if (!isValidType(value, columnType)) {
-                System.out.println("Error: tipo de dato no válido para la columna '" + columnName + "'. Solo admite " + columnType + ".");
-                return; // Salir si hay un error de tipo de dato
+                System.out.println("Error: invalid data type for column '" + columnName + "'. Only accepts " + columnType + ".");
+                return; // Exit if there is a data type error
             }
 
             values.put(columnName, value);
         }
 
-        // Generar la consulta SQL para insertar el registro sin incluir la columna `id`
+        // Generate the SQL query to insert the record without including the `id` column
         StringBuilder query = new StringBuilder("INSERT INTO " + selectedTable + " (");
         StringBuilder valuesPart = new StringBuilder(" VALUES (");
 
@@ -175,13 +175,13 @@ public class RegisterManager {
             valuesPart.append("'").append(entry.getValue()).append("', ");
         }
 
-        query.setLength(query.length() - 2); // Eliminar la última coma
-        valuesPart.setLength(valuesPart.length() - 2); // Eliminar la última coma
+        query.setLength(query.length() - 2); // Remove the last comma
+        valuesPart.setLength(valuesPart.length() - 2); // Remove the last comma
         query.append(")").append(valuesPart).append(")");
 
-        // Ejecutar la consulta
+        // Execute the query
         statement.executeUpdate(query.toString());
-        System.out.println("Registro creado exitosamente.");
+        System.out.println("Record created successfully.");
     }
 
     public static void DeleteRegister(Statement statement, String selectedTable) throws SQLException {
@@ -214,7 +214,7 @@ public class RegisterManager {
 
 
         // Confirmar eliminación
-        System.out.print("Are you sure you want to delete the record with ID " + id + "? (y/n): ");
+        System.out.print("Are you sure you want to delete the record? (y/n): ");
         String confirmation = scanner.nextLine();
 
         // Si la confirmación es "yes", proceder a eliminar
@@ -286,7 +286,7 @@ public class RegisterManager {
             String columnName = entry.getKey();
             String columnType = entry.getValue();
 
-            System.out.print("Enter the new value for '" + columnName + "' (" + columnType + ") or press Enter to keep the current value: ");
+            System.out.print("Enter the new value for or press Enter to keep the current value: ");
             String newValue = scanner.nextLine();
 
             // Si el usuario ingresó un valor, agregarlo a la consulta

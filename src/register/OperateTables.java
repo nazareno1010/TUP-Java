@@ -31,13 +31,13 @@ public class OperateTables {
 
             switch (option) {
                 case 1:
-                    RegisterManager.CreateRegister(statement, selectedTable);
+                    RegisterManager.searchRegister(statement, selectedTable);
                     break;
                 case 2:
-                    RegisterManager.readRegister(statement, selectedTable);
+                    RegisterManager.CreateRegister(statement, selectedTable);
                     break;
                 case 3:
-                    RegisterManager.searchRegister(statement, selectedTable);
+                    RegisterManager.readRegister(statement, selectedTable);
                     break;
                 case 4:
                   RegisterManager.UpdateRegister(statement, selectedTable);
