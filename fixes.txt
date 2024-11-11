@@ -8,20 +8,12 @@ FIX 1: List y Delete en Login sin usuarios creados.
     --> Deberia decir que no hay usuarios y preguntar si desea crear uno. Debe preguntar,
     porque el usuario puede no querer crear un usuario
 
-    Sucede lo mismo para eliminar usuarios.
-
-FIX 2: Database Interface no permite configurar usuarios.
-
-        Desde la interfaz principal no se puede ingresar a la interfaz de usuarios:
-    no se pueden listar, eliminar, crear, o cambiar de usuario de forma local.
 
 FIX 3: List de usuarios en Login
 
         El nombre del usuario no deberia ser el nombre de la config:
     --> Deberia tener un nombre para el conjunto de credenciales, para poder crear un usuario,
     por ejemplo, llamado MySQL con las 3 credenciales de acceso.
-
-FIX 4: Al eliminar usuarios y pedir y/n hay un salto de linea.
 
 FIX 5: ShowDatabases en orden alfabetico
 

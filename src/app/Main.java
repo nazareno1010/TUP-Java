@@ -44,6 +44,7 @@ public class Main {
                 System.out.println("2. Create Database");
                 System.out.println("3. Delete Database");
                 System.out.println("4. Export Database to .CSV");
+                System.out.println("5. Manage Users");
                 System.out.println("0. Exit");
                 System.out.print("Select an option: ");
 
@@ -64,6 +65,9 @@ public class Main {
                                 break;
                             case 4:
                                 exportToCSV();
+                            case 5:
+                                ConfigManager.loginUser(scanner);
+                                break;
                             case 0:
                                 System.out.println("Exiting...");
                                 break;

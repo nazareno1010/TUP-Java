@@ -10,7 +10,7 @@ import java.util.Set;
 public class ConfigManager {
     private static final String CONFIG_FILE = "config.txt";
     private static String URL;
-    private static Map<String, String> userCredentials = new HashMap<>();
+    private static final Map<String, String> userCredentials = new HashMap<>();
     private static String currentUsername;
     private static String currentPassword;
     private static boolean loggedIn = false;
@@ -170,40 +170,63 @@ public class ConfigManager {
     }
 
     private static void listUsers(Scanner scanner) {
-        System.out.println("\nRegistered Users:");
-        int count = 1;
-        for (String username : userCredentials.keySet()) {
-            System.out.println(count + ". " + username);
-            count++;
-        }
-        System.out.print("\nSelect a user by number to log in or press 0 to return: ");
-
-        if (scanner.hasNextInt()) {
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-            if (choice == 0) return;
-
-            int index = 1;
-            for (String username : userCredentials.keySet()) {
-                if (index == choice) {
-                    currentUsername = username;
-                    currentPassword = userCredentials.get(username);
-
-                    if (validateConnection()) {
-                        System.out.println("Login successful.");
-                        return;
-                    } else {
-                        System.out.println("Failed to connect with selected user. Returning to menu.");
-                        currentUsername = null;
-                        currentPassword = null;
-                    }
+        if (userCredentials.isEmpty()) {
+            System.out.println("\nNo registered users found.");
+            String response;
+            while (true) {
+                System.out.print("Would you like to create a new user? (y/n): ");
+                response = scanner.nextLine().trim().toLowerCase();
+                if (response.equals("y")) {
+                    createNewUser(scanner);
+                    return;
+                } else if (response.equals("n")) {
+                    System.out.println("Returning to the main menu.");
+                    return;
+                } else {
+                    System.out.println("Invalid input. Please enter 'y' or 'n'.");
                 }
-                index++;
             }
-            System.out.println("Invalid selection. Returning to menu.");
-        } else {
-            scanner.nextLine();
-            System.out.println("Invalid input. Returning to menu.");
+        }
+
+        while (true) {
+            System.out.println("\nRegistered Users:");
+            int count = 1;
+            for (String username : userCredentials.keySet()) {
+                System.out.println(count + ". " + username);
+                count++;
+            }
+
+            System.out.print("\nSelect a user by number to log in or press 0 to return: ");
+            if (scanner.hasNextInt()) {
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+
+                if (choice == 0) {
+                    return;
+                }
+
+                int index = 1;
+                for (String username : userCredentials.keySet()) {
+                    if (index == choice) {
+                        currentUsername = username;
+                        currentPassword = userCredentials.get(username);
+                        if (validateConnection()) {
+                            System.out.println("Login successful.");
+                            return;
+                        } else {
+                            System.out.println("Failed to connect with selected user. Returning to menu.");
+                            currentUsername = null;
+                            currentPassword = null;
+                        }
+                        return;
+                    }
+                    index++;
+                }
+                System.out.println("Invalid selection. Please choose a valid user.");
+            } else {
+                scanner.nextLine();
+                System.out.println("Invalid input. Please enter a valid number.");
+            }
         }
     }
 
@@ -255,6 +278,24 @@ public class ConfigManager {
     }
 
     public static boolean deleteUser(Scanner scanner) {
+        if (userCredentials.isEmpty()) {
+            System.out.println("\nNo registered users found.");
+            String response;
+            while (true) {
+                System.out.print("Would you like to create a new user instead? (y/n): ");
+                response = scanner.nextLine().trim().toLowerCase();
+                if (response.equals("y")) {
+                    createNewUser(scanner);
+                    return false;
+                } else if (response.equals("n")) {
+                    System.out.println("Returning to the main menu.");
+                    return false;
+                } else {
+                    System.out.println("Invalid input. Please enter 'y' or 'n'.");
+                }
+            }
+        }
+
         while (true) {
             System.out.println("\nRegistered Users:");
             int count = 1;
@@ -264,14 +305,10 @@ public class ConfigManager {
             }
 
             System.out.print("\nSelect a user by number to delete or press 0 to return: ");
-
             if (scanner.hasNextInt()) {
                 int choice = scanner.nextInt();
                 scanner.nextLine();
-
-                if (choice == 0) {
-                    return false;
-                }
+                if (choice == 0) return false;
 
                 int index = 1;
                 String selectedUser = null;
@@ -286,28 +323,23 @@ public class ConfigManager {
                 if (selectedUser != null) {
                     String confirmation;
                     while (true) {
-                        System.out.println("Are you sure you want to delete the user '" + selectedUser + "'? (y/n): ");
+                        System.out.print("Are you sure you want to delete the user '" + selectedUser + "'? (y/n): ");
                         confirmation = scanner.nextLine().trim().toLowerCase();
-
-                        if (confirmation.equals("y") || confirmation.equals("n")) {
-                            break;
+                        if (confirmation.equals("y")) {
+                            userCredentials.remove(selectedUser);
+                            authenticatedUsers.remove(selectedUser);
+                            saveConfig();
+                            System.out.println("User '" + selectedUser + "' deleted successfully.");
+                            return true;
+                        } else if (confirmation.equals("n")) {
+                            System.out.println("User deletion canceled.");
+                            return false;
                         } else {
-                            System.out.println("Invalid input. Please enter 'yes' or 'no'.");
+                            System.out.println("Invalid input. Please enter 'y' or 'n'.");
                         }
                     }
-
-                    if (confirmation.equals("y")) {
-                        userCredentials.remove(selectedUser);
-                        authenticatedUsers.remove(selectedUser);
-                        saveConfig();
-                        System.out.println("User '" + selectedUser + "' deleted successfully.");
-                        return true;
-                    } else {
-                        System.out.println("User deletion canceled.");
-                        return false;
-                    }
                 } else {
-                    System.out.println("Invalid selection. Please try again.");
+                    System.out.println("Invalid selection. Please choose a valid user.");
                 }
             } else {
                 scanner.nextLine();
@@ -343,8 +375,6 @@ public class ConfigManager {
         }
         return success;
     }
-
-
 
     public static String getURL() {
         return URL;
