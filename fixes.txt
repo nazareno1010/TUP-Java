@@ -1,6 +1,6 @@
     --- FIXES MAIN ---
 
-FIX 1: List y Delete en Login sin usuarios creados.
+FIX 1: List en Login sin usuarios creados. // IVAN
 
     Cuando no tenes usuarios en login, si mostras los usuarios te muestra una lista vacia
     y te hace seleccionar un numero o cero para volver.
@@ -8,24 +8,11 @@ FIX 1: List y Delete en Login sin usuarios creados.
     --> Deberia decir que no hay usuarios y preguntar si desea crear uno. Debe preguntar,
     porque el usuario puede no querer crear un usuario
 
-
 FIX 3: List de usuarios en Login
 
         El nombre del usuario no deberia ser el nombre de la config:
     --> Deberia tener un nombre para el conjunto de credenciales, para poder crear un usuario,
     por ejemplo, llamado MySQL con las 3 credenciales de acceso.
-
-FIX 5: ShowDatabases en orden alfabetico
-
-    --> Deberia mostrar en orden de creacion (default).
-
-FIX 6: CreateField datatype
-
-        Al crear un campo en una tabla permite crear campos con datatype invalidos:
-    --> Deberia comprobar de alguna forma que el datatype sea valido.
-
-        Al confirmar que no sea desea crear campos en la tabla recien salta el error,
-    luego de lo cual devuelve a la interfaz principal en vez de la DB seleccionada.
 
  FIX 9: OperateRegisters interface
 
@@ -35,19 +22,11 @@ FIX 6: CreateField datatype
     --> Los nombres tendrian que estar al reves, y 'Search register' deberia de ser la
     opcion 5 por default para respetar las siglas de CRUD.
 
- FIX 10: Update register mensaje
-
-    --> Hacer el mensaje de update register mas breve: Z z Z z Z
-    Enter the new value for 'campo2' (varchar(255)) or press Enter to keep the current value: naza1
-
     --- FIXES CSV ---
 
 FIX 12: Export specific table
 
     --> Muestra DBs predeterminadas (sakila, world)
-
-FIX 13: Select DB no muestra '0. Exit'
-
 
     --- FEATURES ---
 
