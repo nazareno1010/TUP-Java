@@ -59,7 +59,7 @@ public class ConfigManager {
         if (URL == null) {
             boolean credentialsValid = false;
             while (!credentialsValid) {
-                requestNewCredentials(scanner, false);
+                requestNewCredentials(scanner);
                 credentialsValid = validateConnection();
                 if (credentialsValid) {
                     userCredentials.put(currentUsername, currentPassword);
@@ -70,7 +70,7 @@ public class ConfigManager {
             }
         } else {
             boolean validLogin = false;
-            while (!validLogin) {
+            do {
                 int choice = getUserChoice(scanner);
                 if (choice == 1) {
                     validLogin = loginExistingUser(scanner);
@@ -78,21 +78,35 @@ public class ConfigManager {
                     validLogin = createNewUser(scanner);
                 } else if (choice == 3) {
                     deleteUser(scanner);
-                } else if (choice == 4) {
+                } else {
                     listUsers(scanner);
+                    System.out.println("Invalid option. Please enter a number between 1 and 3.");
                 }
-
-                if (validLogin) {
-                    break;
-                }
-            }
+            } while (!validLogin);
         }
     }
 
     private static boolean loginExistingUser(Scanner scanner) {
-        int choice = -1;
+        if (userCredentials.isEmpty()) {
+            System.out.println("\nNo registered users found.");
+            String response;
+            while (true) {
+                System.out.print("Would you like to create a new user? (y/n): ");
+                response = scanner.nextLine().trim().toLowerCase();
+                if (response.equals("y")) {
+                    createNewUser(scanner);
+                    return false;
+                } else if (response.equals("n")) {
+                    System.out.println("Returning to the main menu.");
+                    return false;
+                } else {
+                    System.out.println("Invalid input. Please enter 'y' or 'n'.");
+                }
+            }
+        }
+        int choice;
 
-        while (choice != 0) {
+        while (true) {
             System.out.println("\nRegistered Users:");
             int count = 1;
             for (String username : userCredentials.keySet()) {
@@ -141,12 +155,10 @@ public class ConfigManager {
                 scanner.nextLine();
             }
         }
-        return false;
     }
 
-
     private static int getUserChoice(Scanner scanner) {
-        int choice = 0;
+        int choice;
         while (true) {
             System.out.println("\n=============================================");
             System.out.println("Would you like to:");
@@ -170,24 +182,6 @@ public class ConfigManager {
     }
 
     private static void listUsers(Scanner scanner) {
-        if (userCredentials.isEmpty()) {
-            System.out.println("\nNo registered users found.");
-            String response;
-            while (true) {
-                System.out.print("Would you like to create a new user? (y/n): ");
-                response = scanner.nextLine().trim().toLowerCase();
-                if (response.equals("y")) {
-                    createNewUser(scanner);
-                    return;
-                } else if (response.equals("n")) {
-                    System.out.println("Returning to the main menu.");
-                    return;
-                } else {
-                    System.out.println("Invalid input. Please enter 'y' or 'n'.");
-                }
-            }
-        }
-
         while (true) {
             System.out.println("\nRegistered Users:");
             int count = 1;
@@ -277,7 +271,7 @@ public class ConfigManager {
         }
     }
 
-    public static boolean deleteUser(Scanner scanner) {
+    public static void deleteUser(Scanner scanner) {
         if (userCredentials.isEmpty()) {
             System.out.println("\nNo registered users found.");
             String response;
@@ -286,10 +280,10 @@ public class ConfigManager {
                 response = scanner.nextLine().trim().toLowerCase();
                 if (response.equals("y")) {
                     createNewUser(scanner);
-                    return false;
+                    return;
                 } else if (response.equals("n")) {
                     System.out.println("Returning to the main menu.");
-                    return false;
+                    return;
                 } else {
                     System.out.println("Invalid input. Please enter 'y' or 'n'.");
                 }
@@ -308,7 +302,7 @@ public class ConfigManager {
             if (scanner.hasNextInt()) {
                 int choice = scanner.nextInt();
                 scanner.nextLine();
-                if (choice == 0) return false;
+                if (choice == 0) return;
 
                 int index = 1;
                 String selectedUser = null;
@@ -330,10 +324,10 @@ public class ConfigManager {
                             authenticatedUsers.remove(selectedUser);
                             saveConfig();
                             System.out.println("User '" + selectedUser + "' deleted successfully.");
-                            return true;
+                            return;
                         } else if (confirmation.equals("n")) {
                             System.out.println("User deletion canceled.");
-                            return false;
+                            return;
                         } else {
                             System.out.println("Invalid input. Please enter 'y' or 'n'.");
                         }
@@ -348,11 +342,9 @@ public class ConfigManager {
         }
     }
 
-    private static void requestNewCredentials(Scanner scanner, boolean skipUsername) {
-        if (!skipUsername) {
-            System.out.print("Enter username: ");
-            currentUsername = scanner.nextLine();
-        }
+    private static void requestNewCredentials(Scanner scanner) {
+        System.out.print("Enter username: ");
+        currentUsername = scanner.nextLine();
 
         System.out.print("Enter database URL: ");
         URL = scanner.nextLine();
@@ -388,34 +380,3 @@ public class ConfigManager {
         return currentPassword;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
