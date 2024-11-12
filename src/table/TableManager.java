@@ -82,7 +82,7 @@ public class TableManager {
             System.out.println("1. View existing columns");
             System.out.println("2. Create a new column");
             System.out.println("3. Delete an existing column");
-            System.out.println("4. Create a new record");
+            System.out.println("4. Operate with registers");
             System.out.println("0. Exit");
             System.out.print("Select an option: ");
             int option = scanner.nextInt();
