@@ -14,7 +14,6 @@ public class csvInteface {
     public static Scanner scanner = new Scanner(System.in);
 
     public static void exportToCSV() {
-        // Aquí obtenemos la conexión sin cerrarla automáticamente
         Connection conn = null;
         Statement statement = null;
 
@@ -31,11 +30,15 @@ public class csvInteface {
             System.out.println("Do you want to export a whole database or just a table?");
             System.out.println("1. Export entire database");
             System.out.println("2. Export a specific table");
+            System.out.println("0. Return to database menu");
             System.out.print("Select an option: ");
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consumir el salto de línea
 
-            if (choice == 1) {
+            if (choice == 0) {
+                System.out.println("Returning to database menu...");
+                return; // Salir del método para regresar al menú en Main
+            } else if (choice == 1) {
                 exportDatabaseToCSV(statement, conn);
             } else if (choice == 2) {
                 exportTableToCSV(statement, conn);
@@ -46,11 +49,9 @@ public class csvInteface {
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
         }
-        // No cerramos la conexión ni el statement aquí
     }
 
     private static void exportDatabaseToCSV(Statement statement, Connection conn) throws SQLException {
-        // Mostrar las bases de datos y permitir al usuario seleccionar una
         List<String> databases = getDatabases(statement);
         if (databases.isEmpty()) {
             System.out.println("No available databases to export.");
@@ -62,13 +63,11 @@ public class csvInteface {
         if (dbIndex == -1) return;
         String databaseName = databases.get(dbIndex);
 
-        // Crear carpeta para la base de datos dentro de 'exported'
         File dbFolder = new File("exported/" + databaseName);
         if (!dbFolder.exists()) {
             dbFolder.mkdir();
         }
 
-        // Exportar cada tabla de la base de datos seleccionada
         try (Statement dbStatement = conn.createStatement()) {
             ResultSet tables = dbStatement.executeQuery("SHOW TABLES FROM " + databaseName);
             while (tables.next()) {
@@ -80,7 +79,6 @@ public class csvInteface {
     }
 
     private static void exportTableToCSV(Statement statement, Connection conn) throws SQLException {
-        // Mostrar las bases de datos y permitir al usuario seleccionar una
         List<String> databases = getDatabases(statement);
         if (databases.isEmpty()) {
             System.out.println("No available databases to export.");
@@ -92,7 +90,6 @@ public class csvInteface {
         if (dbIndex == -1) return;
         String databaseName = databases.get(dbIndex);
 
-        // Mostrar las tablas de la base de datos seleccionada
         List<String> tables = getTables(databaseName, conn);
         if (tables.isEmpty()) {
             System.out.println("No tables found in database: " + databaseName);
@@ -104,17 +101,14 @@ public class csvInteface {
         if (tableIndex == -1) return;
         String tableName = tables.get(tableIndex);
 
-        // Crear la subcarpeta de la base de datos dentro de 'exported'
         File dbFolder = new File("exported/" + databaseName);
         if (!dbFolder.exists()) {
             dbFolder.mkdir();
         }
 
-        // Exportar la tabla seleccionada dentro de la subcarpeta de la base de datos
         exportTableToCSV(databaseName, tableName, dbFolder.getAbsolutePath(), conn);
         System.out.println("Table exported successfully to file: " + dbFolder.getPath() + "/" + tableName + ".csv");
     }
-
 
     private static void exportTableToCSV(String databaseName, String tableName, String folderPath, Connection conn) {
         String csvFilePath = folderPath + "/" + tableName + ".csv";
@@ -190,6 +184,3 @@ public class csvInteface {
         }
     }
 }
-
-
-

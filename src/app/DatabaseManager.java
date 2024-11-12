@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.*;
+import CSV.csvInteface;
 
 public class DatabaseManager {
     private static final Set<String> EXCLUDED_DATABASES = Main.EXCLUDED_DATABASES;
@@ -76,9 +77,11 @@ public class DatabaseManager {
             }
         }
     }
+
+    public static void exportOptions(Statement statement, Scanner scanner) throws SQLException {
+        csvInteface.exportToCSV();
+        // Aquí puedes agregar cualquier acción posterior a la exportación para que siga en DatabaseManager
+        System.out.println("Returning to DatabaseManager menu.");
+        // Otras opciones del menú se pueden agregar aquí si es necesario
+    }
 }
-
-
-
-
-

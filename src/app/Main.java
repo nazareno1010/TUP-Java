@@ -35,6 +35,7 @@ public class Main {
         scanner.close();
         ConnectionManager.closeConnection();
     }
+
     public static void interfaceDatabase() {
         try (Statement statement = ConnectionManager.getConnection().createStatement()) {
             int option = -1;
@@ -65,6 +66,7 @@ public class Main {
                                 break;
                             case 4:
                                 exportToCSV();
+                                break; // Esto asegurará que se vuelva al menú principal
                             case 5:
                                 ConfigManager.loginUser(scanner);
                                 break;
@@ -89,17 +91,3 @@ public class Main {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
