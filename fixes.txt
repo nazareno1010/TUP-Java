@@ -6,27 +6,13 @@ FIX 1: List en Login sin usuarios creados. // IVAN
     y te hace seleccionar un numero o cero para volver.
 
     --> Deberia decir que no hay usuarios y preguntar si desea crear uno. Debe preguntar,
-    porque el usuario puede no querer crear un usuario
+    porque el usuario puede no querer crear un
 
 FIX 3: List de usuarios en Login
 
         El nombre del usuario no deberia ser el nombre de la config:
     --> Deberia tener un nombre para el conjunto de credenciales, para poder crear un usuario,
     por ejemplo, llamado MySQL con las 3 credenciales de acceso.
-
- FIX 9: OperateRegisters interface
-
-        La opcion 'read register' muestra todos los registros y 'Search register'
-    permite buscar por ID:
-
-    --> Los nombres tendrian que estar al reves, y 'Search register' deberia de ser la
-    opcion 5 por default para respetar las siglas de CRUD.
-
-    --- FIXES CSV ---
-
-FIX 12: Export specific table
-
-    --> Muestra DBs predeterminadas (sakila, world)
 
     --- FEATURES ---
 
