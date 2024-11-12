@@ -17,9 +17,9 @@ public class OperateTables {
         int option;
         do {
             System.out.println("\n===== DBSM - Database Management System =====");
-            System.out.println("1. Create Register");
-            System.out.println("2. Read Register");
-            System.out.println("3. Search Register With ID");
+            System.out.println("1. Search Register With ID");
+            System.out.println("2. Create Register");
+            System.out.println("3. Read Register");
             System.out.println("4. Update Register");
             System.out.println("5. Delete Register");
 //            System.out.println("6. Convert to .CSV");
